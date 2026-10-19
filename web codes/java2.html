@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>Moving Car</title>
+		<style>
+			body {
+				height: 2000px;
+			}
+			
+			#car {
+				position: fixed;
+				bottom: 20px;
+				left: 0px;
+				width: 100px;
+			}
+		</style>
+	</head>
+	<body>
+		<h2>Scroll to Move the Car</h2>
+		
+		<div id="car"><img src = "/home/student/debayon(webtech)/car_logo.webp"></div>
+		
+		<script>
+			window.addEventListener("scroll", function () {
+				let scrollPosition = window.scrollY;
+				console.log(scrollPosition);
+				document.getElementById("car").style.left = scrollPosition + "px";
+				});
+		</script>
+	</body>
+</html>

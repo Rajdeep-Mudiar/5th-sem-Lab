@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>Document</title>
+	</head>
+	<body>
+		<h1 class="hh" id="h1">Software</h1>
+		<button onclick="change()">Click to change Colour</button>
+		<button onclick="dark('black')">Click to change Theme</button>
+		<button onclick="changeInner()">Click to change text</button>
+		<script>
+			dark = (c) => {
+				document.body.style.backgroundColor = c;
+			};
+			function change() {
+				document.getElementById("h1").style.color = "red";
+			}
+			function changeInner() {
+				document.getElementById("h1").innerHTML = "<p>Hello from innerHTML</p>"
+			}
+		</script>
+	</body>
+</html>
