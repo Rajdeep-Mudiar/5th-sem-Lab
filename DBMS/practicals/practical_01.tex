@@ -1,0 +1,132 @@
+\section{Experiment 1: Introduction to MySQL}
+\label{exp:intro_mysql}
+
+\subsection*{Aim}
+To study the MySQL relational database management system, its architectural framework, installation configuration, core features, supported datatypes, and basic administrative commands.
+
+\subsection*{Objectives}
+\begin{itemize}
+    \item To understand the fundamentals of Relational Database Management Systems (RDBMS).
+    \item To explore the client-server architecture and storage engines of MySQL.
+    \item To understand various SQL sublanguages (DDL, DML, DQL, DCL, TCL).
+    \item To execute fundamental environment and session management commands in the MySQL command-line client.
+\end{itemize}
+
+\subsection*{Theory}
+\textbf{MySQL} is one of the most popular open-source Relational Database Management Systems (RDBMS). It is fast, reliable, scalable, and widely deployed across small-scale applications as well as large enterprise systems. MySQL is currently developed, marketed, and supported by Oracle Corporation (originally by MySQL AB).
+
+\subsubsection*{1. Key Features of MySQL}
+\begin{itemize}
+    \item \textbf{Open-Source License:} Released under the GNU General Public License (GPL), making it free to use and modify.
+    \item \textbf{High Performance \& Speed:} Built with high-speed memory caches and optimized query execution engines.
+    \item \textbf{Cross-Platform Support:} Runs on various operating systems, including Linux, Windows, macOS, and UNIX.
+    \item \textbf{Language Connectivity:} Native support for programming interfaces such as Python, Java (JDBC), PHP, C, C++, and Node.js.
+    \item \textbf{Scalability:} Efficiently manages large-scale databases containing over 50 million records and multiple terabytes of storage.
+    \item \textbf{Pluggable Storage Engine Architecture:} Supports multiple storage engines such as \textbf{InnoDB} (providing ACID compliance, row-level locking, and foreign keys) and \textbf{MyISAM} (optimized for read-intensive workloads).
+\end{itemize}
+
+\subsubsection*{2. Classification of SQL Commands}
+Structured Query Language (SQL) statements are broadly categorized into:
+\begin{enumerate}
+    \item \textbf{DDL (Data Definition Language):} Schema commands (\texttt{CREATE}, \texttt{ALTER}, \texttt{DROP}, \texttt{TRUNCATE}).
+    \item \textbf{DML (Data Manipulation Language):} Record commands (\texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE}).
+    \item \textbf{DQL (Data Query Language):} Record retrieval via \texttt{SELECT}.
+    \item \textbf{DCL (Data Control Language):} Privilege management (\texttt{GRANT}, \texttt{REVOKE}).
+    \item \textbf{TCL (Transaction Control Language):} Transaction states (\texttt{COMMIT}, \texttt{ROLLBACK}, \texttt{SAVEPOINT}).
+\end{enumerate}
+
+\subsubsection*{3. Standard MySQL Data Types}
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|l|l|p{7.5cm}|}
+\hline
+\textbf{Category} & \textbf{Data Type} & \textbf{Description} \\ \hline
+Numeric & \texttt{INT} & Standard 4-byte integer ($-2^{31}$ to $2^{31}-1$). \\ \cline{2-3}
+        & \texttt{DECIMAL(M,D)} & Exact fixed-point numeric type (e.g., currency). \\ \cline{2-3}
+        & \texttt{FLOAT / DOUBLE} & Approximate floating-point numbers. \\ \hline
+String  & \texttt{CHAR(N)} & Fixed-length string ($0$ to $255$ characters). \\ \cline{2-3}
+        & \texttt{VARCHAR(N)} & Variable-length string ($0$ to $65,535$ characters). \\ \cline{2-3}
+        & \texttt{TEXT} & Long string storage for large textual bodies. \\ \hline
+Date/Time & \texttt{DATE} & Date formatted as \texttt{YYYY-MM-DD}. \\ \cline{2-3}
+          & \texttt{TIME} & Time formatted as \texttt{HH:MM:SS}. \\ \cline{2-3}
+          & \texttt{TIMESTAMP} & Tracks epoch timestamps; auto-updates on row modification. \\ \hline
+\end{tabular}
+\caption{Common MySQL Data Types}
+\end{table}
+
+\begin{infobox}[Note on Client-Server Architecture]
+MySQL works as a client-server system where the server daemon (\texttt{mysqld}) listens for incoming queries over TCP port 3306 or local UNIX sockets, processes queries via the parser/optimizer, and returns result sets to client interfaces.
+\end{infobox}
+
+\newpage
+
+\subsection*{Commands Execution \& Output Screenshots}
+
+\subsubsection*{1. Connecting to MySQL Server and Verifying Session}
+The MySQL command-line client is launched with root privileges. Once authenticated, metadata queries are executed to confirm server version, current user, and current system timestamp:
+
+\begin{lstlisting}[caption={Authentication and version verification}]
+-- Connect to the local MySQL server instance as root user
+mysql -u root -p
+
+-- Retrieve MySQL version, current active user, and current system timestamp
+SELECT VERSION(), USER(), NOW();
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth,height=12.5cm,keepaspectratio]{Exp1-mysql-u.png}
+    \caption{Connecting to MySQL monitor and verifying server version and session metadata.}
+    \label{fig:exp1_mysql_u}
+\end{figure}
+
+\newpage
+
+\subsubsection*{2. Inspecting Server Runtime Status}
+The \texttt{STATUS;} command provides diagnostic and operational parameters of the MySQL server connection, including the protocol version, UNIX socket location, uptime, threads, and default character sets:
+
+\begin{lstlisting}[caption={Querying server status and connection parameters}]
+-- Check active session connection details and server status
+STATUS;
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth,height=15cm,keepaspectratio]{Exp1-status.png}
+    \caption{Execution of \texttt{STATUS;} command displaying runtime parameters, uptime, and character encoding.}
+    \label{fig:exp1_status}
+\end{figure}
+
+\newpage
+
+\subsubsection*{3. Database Inspection, Creation, and Selection}
+The server's existing databases are inspected using \texttt{SHOW DATABASES;}. A new sandbox database \texttt{lab\_demo} is created, followed by switching to it using \texttt{USE lab\_demo;}, and confirming the active context via \texttt{SELECT DATABASE();}:
+
+\begin{lstlisting}[caption={Listing, creating, and switching active database}]
+-- List all available databases on the server
+SHOW DATABASES;
+
+-- Create a new sandbox database
+CREATE DATABASE lab_demo;
+
+-- Verify creation of the database
+SHOW DATABASES;
+
+-- Set lab_demo as the active database for the current session
+USE lab_demo;
+
+-- Confirm current active database
+SELECT DATABASE();
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.74\textwidth,height=9.8cm,keepaspectratio]{Exp1-use.png}
+    \caption{Console output showing database listing, creation of \texttt{lab\_demo}, switching database context, and verifying active selection.}
+    \label{fig:exp1_use}
+\end{figure}
+
+\subsection*{Result}
+The fundamentals of the MySQL database management system, its client-server architecture, SQL command categories, and data types were studied. The administrative and session management commands were executed, and the outputs were verified.
