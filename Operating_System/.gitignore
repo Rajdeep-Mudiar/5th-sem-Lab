@@ -1,0 +1,28 @@
+# LaTeX Auxiliary Files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+
+# Output PDF (uncomment if you don't want to track the generated PDF in git)
+# main.pdf
+
+# OS generated files
+.DS_Store
+Thumbs.db

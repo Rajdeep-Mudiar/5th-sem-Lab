@@ -1,0 +1,106 @@
+% =========================================================================
+% APPENDIX
+% =========================================================================
+\section*{Appendix A: Viva-Voce Questions}
+\addcontentsline{toc}{section}{Appendix A: Viva-Voce Questions}
+
+\begin{enumerate}
+    \item \textbf{What is a system call?}\\
+    A system call is the interface through which a user-space program requests a service from the operating-system kernel, such as file access, process creation or memory allocation.
+
+    \item \textbf{How does a system call differ from a library function?}\\
+    A library function runs in user space and may or may not invoke a system call. A system call switches the processor to kernel mode and executes privileged kernel code.
+
+    \item \textbf{What are the possible return values of \texttt{fork()}?}\\
+    A positive value (the child PID) is returned in the parent, \texttt{0} is returned in the child, and \texttt{-1} is returned if the child cannot be created.
+
+    \item \textbf{Why is \texttt{wait()} used by a parent process?}\\
+    \texttt{wait()} suspends the parent until a child terminates and collects the child's exit status, preventing the child from remaining a zombie.
+
+    \item \textbf{What is a zombie process?}\\
+    A zombie is a terminated process whose exit status has not yet been collected by its parent. Its process-table entry remains until the parent calls \texttt{wait()} or itself terminates.
+
+    \item \textbf{What is the difference between a shell and the kernel?}\\
+    The kernel is the privileged core that manages processes, memory, files and devices. The shell is an ordinary user-level command interpreter that reads commands and requests kernel services.
+
+    \item \textbf{Why is the shebang line used in a shell script?}\\
+    The shebang \texttt{\#!/bin/bash} tells the kernel which interpreter should execute the script when the file is run directly.
+
+    \item \textbf{What is the difference between \texttt{[ ]} and \texttt{(( ))} in Bash?}\\
+    \texttt{[ ]} is the POSIX test command and works with strings, files and integers. \texttt{(( ))} evaluates an arithmetic expression and returns true when the result is non-zero.
+
+    \item \textbf{What is the convoy effect in FCFS scheduling?}\\
+    A long process at the head of the queue makes many short processes wait, increasing the average waiting time. This is called the convoy effect.
+
+    \item \textbf{Why is SJF considered optimal?}\\
+    For a fixed set of processes with known burst times, serving the shortest job first minimises the average waiting time. Its practical difficulty is that the next burst time is not known in advance.
+
+    \item \textbf{What is the main disadvantage of priority scheduling?}\\
+    Low-priority processes may never receive the CPU. Aging gradually increases the priority of waiting processes to prevent starvation.
+
+    \item \textbf{What happens if the Round Robin time quantum is too small or too large?}\\
+    A very small quantum causes frequent context switches and high overhead. A very large quantum degenerates into FCFS. The quantum should be large relative to a typical context switch but small enough for good response time.
+
+    \item \textbf{What is a race condition?}\\
+    A race condition occurs when two or more processes access shared data concurrently and the final result depends on the order of their execution.
+
+    \item \textbf{What is the difference between a mutex and a semaphore?}\\
+    A mutex provides mutual exclusion with ownership and is normally used to protect a critical section. A counting semaphore controls access to a number of identical resources and does not have an owner.
+
+    \item \textbf{What are the four necessary conditions for deadlock?}\\
+    Mutual exclusion, hold-and-wait, no preemption and circular wait. All four must hold simultaneously for a deadlock to occur.
+
+    \item \textbf{What is the difference between a safe and an unsafe state?}\\
+    In a safe state there is at least one sequence in which every process can finish. An unsafe state has no such sequence and may lead to deadlock, although it is not necessarily deadlocked yet.
+
+    \item \textbf{How is the need matrix computed in Banker's algorithm?}\\
+    \texttt{Need[i][j] = Max[i][j] - Allocation[i][j]} for every process $i$ and resource $j$.
+
+    \item \textbf{What is a Process Control Block (PCB)?}\\
+    A PCB is the kernel data structure that stores a process's identifiers, state, program counter, registers, scheduling information, memory information and open-file information.
+\end{enumerate}
+
+\newpage
+\section*{Appendix B: Compilation and Execution Quick Reference}
+\addcontentsline{toc}{section}{Appendix B: Compilation and Execution Quick Reference}
+
+\paragraph{Compiling and running a C program.}
+\begin{lstlisting}[style=terminal]
+gcc -std=c11 -Wall -Wextra -o expt_2_1 expt_2_1.c
+./expt_2_1
+\end{lstlisting}
+
+\paragraph{Running a shell script.}
+\begin{lstlisting}[style=terminal]
+chmod +x 08_even_or_odd.sh
+./08_even_or_odd.sh
+# alternatively
+bash 08_even_or_odd.sh
+\end{lstlisting}
+
+\paragraph{Building this manual.}
+\begin{lstlisting}[style=terminal]
+latexmk -pdf main.tex
+# or
+pdflatex main.tex
+pdflatex main.tex
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{|l|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Command} & \textbf{Purpose} \\ \hline
+\texttt{ls} & List directory contents. \\ \hline
+\texttt{cat} & Display or concatenate files. \\ \hline
+\texttt{grep} & Search for a pattern in text. \\ \hline
+\texttt{chmod} & Change file permissions. \\ \hline
+\texttt{ps} & Display process information. \\ \hline
+\texttt{kill} & Send a signal to a process. \\ \hline
+\texttt{pwd} & Print the current working directory. \\ \hline
+\texttt{date} & Display the current date and time. \\ \hline
+\end{tabularx}
+\caption{Frequently used UNIX commands in the laboratory.}
+\end{table}

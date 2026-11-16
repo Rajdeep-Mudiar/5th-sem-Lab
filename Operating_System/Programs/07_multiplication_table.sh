@@ -1,7 +1,6 @@
-# Create a script to display the multiplication table of a number 
-
-
 #!/bin/bash
+
+# Create a script to display the multiplication table of a number
 
 echo "Enter a number:"
 read n

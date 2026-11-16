@@ -1,6 +1,6 @@
-# Create a script to find the sum of digits of a number
-
 #!/bin/bash
+
+# Create a script to find the sum of digits of a number
 
 echo "Enter a number:"
 read n

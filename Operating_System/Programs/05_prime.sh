@@ -1,6 +1,6 @@
-# Create a script to check if a number is prime or not 
-
 #!/bin/bash
+
+# Create a script to check if a number is prime or not
 
 echo "Enter a number:"
 read n

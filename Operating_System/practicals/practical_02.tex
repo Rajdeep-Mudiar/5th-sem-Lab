@@ -1,0 +1,91 @@
+\section{Experiment 2: UNIX System Calls}
+\label{exp:syscalls}
+
+\subsection*{Aim}
+To write C programs using the UNIX system calls \texttt{opendir}, \texttt{readdir}, \texttt{closedir}, \texttt{fork}, \texttt{getpid}, and \texttt{exit}.
+
+\subsection*{Theory}
+A \textbf{system call} is the programming interface through which a user program requests a service from the operating-system kernel. Library functions such as \texttt{printf} eventually invoke system calls such as \texttt{write}. The system calls used in this experiment are:
+
+\begin{itemize}
+    \item \texttt{opendir(path)} opens a directory stream and returns a pointer of type \texttt{DIR *}. It returns \texttt{NULL} on failure.
+    \item \texttt{readdir(dirp)} returns a pointer to the next directory entry (\texttt{struct dirent}), or \texttt{NULL} when the end of the directory is reached.
+    \item \texttt{closedir(dirp)} closes the directory stream and releases its resources.
+    \item \texttt{fork()} creates a new child process. It returns \texttt{0} in the child, the child's process ID in the parent, and \texttt{-1} on failure.
+    \item \texttt{getpid()} returns the process ID of the calling process.
+    \item \texttt{exit(status)} terminates the calling process and returns a status value to its parent.
+\end{itemize}
+
+\subsection{Directory Traversal using \texttt{opendir}, \texttt{readdir} and \texttt{closedir}}
+
+\paragraph{Aim.}
+To list the contents of a directory by reading its directory entries with the UNIX directory system calls.
+
+\paragraph{Algorithm.}
+\begin{enumerate}
+    \item Start the program.
+    \item Declare a directory pointer \texttt{DIR *dir}, a directory-entry pointer \texttt{struct dirent *entry}, and a character array \texttt{path}.
+    \item Read the directory name from the user.
+    \item Call \texttt{opendir(path)}. If it returns \texttt{NULL}, print an error with \texttt{perror} and exit.
+    \item Call \texttt{readdir(dir)} repeatedly until it returns \texttt{NULL}; print \texttt{entry->d\_name} for each entry.
+    \item Call \texttt{closedir(dir)} to release the directory stream.
+    \item Stop the program.
+\end{enumerate}
+
+\paragraph{Program.}
+\lstinputlisting[style=cstyle, caption={Directory traversal using \texttt{opendir}, \texttt{readdir} and \texttt{closedir} (\texttt{expt\_2\_1.c})}]{Programs/expt_2_1.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=outputstyle, caption={Listing the contents of the current directory}]
+$ gcc expt_2_1.c -o expt_2_1
+$ ./expt_2_1
+Enter directory name: .
+.
+..
+01_fibonacci.sh
+02_palindrome.sh
+03_power.sh
+04_second_largest.sh
+05_prime.sh
+06_sum_of_digits.sh
+07_multiplication_table.sh
+08_even_or_odd.sh
+09_leap_year.sh
+10_factorial.sh
+11_swap_two_integers.sh
+expt_2_1.c
+\end{lstlisting}
+
+\subsection{Process Creation using \texttt{fork}, \texttt{getpid} and \texttt{exit}}
+
+\paragraph{Aim.}
+To create a child process with \texttt{fork} and to display the process IDs of the parent and the child.
+
+\paragraph{Algorithm.}
+\begin{enumerate}
+    \item Start the program.
+    \item Call \texttt{fork()} and store its return value in \texttt{pid}.
+    \item If \texttt{pid} is \texttt{-1}, report an error and exit.
+    \item If \texttt{pid} is greater than zero, the current process is the parent: call \texttt{getpid()} and print the parent process ID.
+    \item If \texttt{pid} is zero, the current process is the child: call \texttt{getpid()} and print the child process ID.
+    \item Let both processes terminate normally.
+    \item Stop the program.
+\end{enumerate}
+
+\begin{infobox}[Process Creation]
+After \texttt{fork}, the parent and the child execute the same program from the instruction following the call. The value returned by \texttt{fork} is the only way the program can distinguish the two processes. The order in which their output appears is decided by the scheduler and is therefore not fixed.
+\end{infobox}
+
+\paragraph{Program.}
+\lstinputlisting[style=cstyle, caption={Process creation using \texttt{fork} and \texttt{getpid} (\texttt{expt\_2\_2.c})}]{Programs/expt_2_2.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=outputstyle, caption={Parent and child process IDs}]
+$ gcc expt_2_2.c -o expt_2_2
+$ ./expt_2_2
+Parent process ID: 4210
+Child process ID: 4211
+\end{lstlisting}
+
+\subsection*{Result}
+C programs using the directory system calls \texttt{opendir}, \texttt{readdir}, and \texttt{closedir}, and the process system calls \texttt{fork}, \texttt{getpid}, and \texttt{exit}, were written, compiled, and executed successfully. The parent and child process IDs were displayed correctly.

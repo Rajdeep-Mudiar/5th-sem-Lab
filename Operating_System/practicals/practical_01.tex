@@ -1,0 +1,137 @@
+\section{Experiment 1: Introduction to UNIX/Linux and Basic Commands}
+\label{exp:unix}
+
+\subsection*{Aim}
+To study the architecture of the UNIX/Linux operating system and to practise the basic file, directory, text-processing, and process-management commands available in the shell.
+
+\subsection*{Theory}
+UNIX is a multiuser, multitasking operating system originally developed at AT\&T Bell Laboratories in 1969 by Ken Thompson and Dennis Ritchie. Linux is a free, open-source, UNIX-like operating system whose kernel was created by Linus Torvalds in 1991. Most UNIX commands behave identically on Linux, so the two systems share a common command-line environment.
+
+\subsubsection*{1. Structure of a UNIX/Linux System}
+A UNIX/Linux system is organised into three layers:
+\begin{enumerate}
+    \item \textbf{Kernel:} The core of the operating system. It manages processes, memory, files, devices, and system calls. It decides when a process runs and provides controlled access to hardware.
+    \item \textbf{Shell:} The command interpreter. It reads commands from the user, expands them, and asks the kernel to execute the corresponding programs. Common shells are the Bourne shell (\texttt{sh}), Bourne Again shell (\texttt{bash}), C shell (\texttt{csh}), and Korn shell (\texttt{ksh}).
+    \item \textbf{Utilities and applications:} Standard tools such as \texttt{ls}, \texttt{cat}, \texttt{grep}, editors, compilers, and user programs.
+\end{enumerate}
+
+\begin{infobox}[Kernel, Shell and Utilities]
+The kernel speaks to the hardware; the shell speaks to the user; utilities perform individual tasks. A shell script is simply a text file containing a sequence of shell commands and control statements.
+\end{infobox}
+
+\subsubsection*{2. The File System}
+UNIX/Linux presents files and devices through a single hierarchical directory tree that starts at the root directory \texttt{/}. Important directories include \texttt{/bin} (essential commands), \texttt{/etc} (configuration files), \texttt{/home} (user home directories), \texttt{/tmp} (temporary files), and \texttt{/var} (variable data such as logs).
+
+Every file has an owner, a group, and a set of permission bits. The permissions are read (\texttt{r}), write (\texttt{w}), and execute (\texttt{x}), applied separately to the user, the group, and others.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Symbol} & \textbf{Permission} & \textbf{Octal Value} \\ \hline
+\texttt{r} & Read a file or list a directory & 4 \\ \hline
+\texttt{w} & Write a file or create/delete entries in a directory & 2 \\ \hline
+\texttt{x} & Execute a file or enter a directory & 1 \\ \hline
+\texttt{rwx} & All permissions for one category & 7 \\ \hline
+\texttt{rw-} & Read and write, no execute & 6 \\ \hline
+\end{tabular}
+\caption{UNIX/Linux permission bits}
+\end{table}
+
+\subsubsection*{3. Basic Commands}
+\begingroup
+\setlength{\tabcolsep}{5pt}
+\begin{longtable}{|p{3.0cm}|p{7.9cm}|p{3.5cm}|}
+\hline
+\textbf{Command} & \textbf{Purpose} & \textbf{Example} \\ \hline
+\endhead
+\texttt{date} & Displays the current date and time. & \texttt{date} \\ \hline
+\texttt{cal} & Displays a calendar. & \texttt{cal 2026} \\ \hline
+\texttt{pwd} & Prints the absolute path of the working directory. & \texttt{pwd} \\ \hline
+\texttt{ls} & Lists directory contents. Options \texttt{-l}, \texttt{-a}, \texttt{-t}, and \texttt{-h} control format and order. & \texttt{ls -la} \\ \hline
+\texttt{cd} & Changes the current directory. & \texttt{cd /home} \\ \hline
+\texttt{mkdir} & Creates a directory. & \texttt{mkdir lab} \\ \hline
+\texttt{rmdir} & Removes an empty directory. & \texttt{rmdir lab} \\ \hline
+\texttt{touch} & Creates an empty file or updates its timestamp. & \texttt{touch notes.txt} \\ \hline
+\texttt{cat} & Creates, displays, or concatenates files. & \texttt{cat notes.txt} \\ \hline
+\texttt{cp} & Copies files or directories. & \texttt{cp a.txt b.txt} \\ \hline
+\texttt{mv} & Moves or renames files and directories. & \texttt{mv a.txt b.txt} \\ \hline
+\texttt{rm} & Removes files or directories. & \texttt{rm a.txt} \\ \hline
+\texttt{grep} & Searches for a pattern in a file or input stream. & \texttt{grep root /etc/passwd} \\ \hline
+\texttt{head} & Displays the first lines of a file. & \texttt{head -5 data.txt} \\ \hline
+\texttt{tail} & Displays the last lines of a file. & \texttt{tail -5 data.txt} \\ \hline
+\texttt{wc} & Counts lines, words, and characters. & \texttt{wc -l data.txt} \\ \hline
+\texttt{cut} & Extracts selected characters or fields. & \texttt{cut -d: -f1 /etc/passwd} \\ \hline
+\texttt{sort} & Sorts lines of text. & \texttt{sort names.txt} \\ \hline
+\texttt{chmod} & Changes file permissions. & \texttt{chmod 755 run.sh} \\ \hline
+\texttt{man} & Displays the manual page of a command. & \texttt{man ls} \\ \hline
+\texttt{who} & Lists users currently logged in. & \texttt{who} \\ \hline
+\texttt{whoami} & Prints the current user name. & \texttt{whoami} \\ \hline
+\texttt{uname} & Prints system information. & \texttt{uname -a} \\ \hline
+\texttt{ps} & Lists running processes. & \texttt{ps -ef} \\ \hline
+\texttt{kill} & Sends a signal to a process. & \texttt{kill 1234} \\ \hline
+\texttt{df} & Reports free disk space. & \texttt{df -h} \\ \hline
+\texttt{du} & Reports disk usage of files and directories. & \texttt{du -sh .} \\ \hline
+\texttt{find} & Searches for files in a directory tree. & \texttt{find . -name "*.c"} \\ \hline
+\end{longtable}
+\endgroup
+
+\subsubsection*{4. The vi Editor}
+The \texttt{vi} editor is a full-screen text editor available on almost every UNIX/Linux system. It has three modes:
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{2.6cm}|p{7.2cm}|p{4.0cm}|}
+\hline
+\textbf{Mode} & \textbf{Purpose} & \textbf{How to enter} \\ \hline
+Command mode & Move the cursor, delete text, copy and paste, save or quit. & Press \texttt{Esc}. \\ \hline
+Insert mode & Type or modify text. & Press \texttt{i}, \texttt{a}, \texttt{o}, or \texttt{O} in command mode. \\ \hline
+Ex mode & Run line-oriented commands such as save, quit, and substitution. & Press \texttt{:} in command mode. \\ \hline
+\end{tabular}
+\caption{Modes of the vi editor}
+\end{table}
+
+\subsection*{Procedure}
+\begin{enumerate}
+    \item Log in to the Linux system and open a terminal.
+    \item Use \texttt{pwd}, \texttt{whoami}, and \texttt{uname -a} to inspect the session and the system.
+    \item Create a working directory with \texttt{mkdir}, move into it with \texttt{cd}, and create files with \texttt{touch} and \texttt{cat}.
+    \item Use \texttt{ls -l}, \texttt{cat}, \texttt{head}, \texttt{tail}, \texttt{wc}, and \texttt{grep} to inspect and search the files.
+    \item Change permissions with \texttt{chmod} and verify them with \texttt{ls -l}.
+    \item List processes with \texttt{ps} and inspect the manual page of a command with \texttt{man}.
+    \item Create and edit a file with \texttt{vi}, then save and exit using \texttt{:wq}.
+\end{enumerate}
+
+\subsection*{Sample Session}
+\begin{lstlisting}[style=outputstyle, caption={A short terminal session using basic UNIX/Linux commands}]
+$ pwd
+/home/student
+$ whoami
+student
+$ uname -s
+Linux
+$ mkdir os_lab
+$ cd os_lab
+$ touch file1.txt file2.txt
+$ ls -l
+total 0
+-rw-r--r-- 1 student student 0 Nov 16 10:15 file1.txt
+-rw-r--r-- 1 student student 0 Nov 16 10:15 file2.txt
+$ echo "Operating Systems Laboratory" > file1.txt
+$ cat file1.txt
+Operating Systems Laboratory
+$ wc -w file1.txt
+3 file1.txt
+$ chmod 755 file1.txt
+$ ls -l file1.txt
+-rwxr-xr-x 1 student student 30 Nov 16 10:18 file1.txt
+$ ps
+    PID TTY          TIME CMD
+   2145 pts/0    00:00:00 bash
+   2190 pts/0    00:00:00 ps
+\end{lstlisting}
+
+\subsection*{Result}
+The layered architecture of UNIX/Linux, its file system, permission model, and the behaviour of the basic commands were studied. The commands were executed in a terminal and their output was verified.

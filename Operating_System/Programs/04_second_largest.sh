@@ -1,6 +1,6 @@
-# Write a script to find the second-largest number in a list 
-
 #!/bin/bash
+
+# Write a script to find the second-largest number in a list
 
 echo "Enter the numbers separated by spaces:"
 read -a arr

@@ -1,0 +1,366 @@
+\section{Experiment 4: Shell Programming}
+\label{exp:shell}
+
+\subsection*{Aim}
+To write shell scripts using variables, command-line input, arithmetic expressions, conditional statements, and looping constructs, and to study the behaviour of the Bash shell.
+
+\subsection*{Theory}
+A \textbf{shell script} is a text file containing a sequence of commands that the shell executes one after another. The first line of a well-formed script is the \emph{shebang}, for example \texttt{\#!/bin/bash}, which tells the kernel which interpreter should run the file. A script can be executed directly after it is made executable with \texttt{chmod +x}, or it can be passed to the interpreter with \texttt{bash script.sh}.
+
+The programs in this experiment use the following Bash features:
+\begin{itemize}
+    \item \texttt{read}: reads a line of input from the user into one or more variables.
+    \item \texttt{\$(( expression ))}: evaluates an arithmetic expression.
+    \item \texttt{if \ldots then \ldots else \ldots fi}: selects between two or more branches.
+    \item \texttt{for ((init; condition; update))}: repeats a block a known number of times.
+    \item \texttt{while [ condition ]}: repeats a block while a condition remains true.
+    \item \texttt{\${array[@]}} and \texttt{read -a}: store and traverse a list of values.
+\end{itemize}
+
+\begin{infobox}[Running a Shell Script]
+Make the script executable with \texttt{chmod +x script.sh} and run it as \texttt{./script.sh}. Alternatively, run it explicitly with \texttt{bash script.sh}. The scripts below assume Bash; the command \texttt{rev} used by the palindrome program is provided by GNU coreutils.
+\end{infobox}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.6cm}|>{\raggedright\arraybackslash}p{5.3cm}|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Program} & \textbf{File} & \textbf{Main constructs} \\ \hline
+Even or odd & \texttt{08\_even\_or\_odd.sh} & Arithmetic expansion, \texttt{if} \\ \hline
+Leap year & \texttt{09\_leap\_year.sh} & Compound logical expression \\ \hline
+Factorial & \texttt{10\_factorial.sh} & \texttt{for} loop, accumulator \\ \hline
+Swap two integers & \texttt{11\_swap\_two\_integers.sh} & Variables, temporary variable \\ \hline
+Fibonacci series & \texttt{01\_fibonacci.sh} & \texttt{for} loop, recurrence \\ \hline
+Palindrome & \texttt{02\_palindrome.sh} & Command substitution, string test \\ \hline
+Power of a number & \texttt{03\_power.sh} & \texttt{for} loop, repeated multiplication \\ \hline
+Second-largest number & \texttt{04\_second\_largest.sh} & Array, nested conditions \\ \hline
+Prime check & \texttt{05\_prime.sh} & \texttt{for} loop, divisibility test \\ \hline
+Sum of digits & \texttt{06\_sum\_of\_digits.sh} & \texttt{while} loop, integer division \\ \hline
+Multiplication table & \texttt{07\_multiplication\_table.sh} & Fixed-count \texttt{for} loop \\ \hline
+\end{tabularx}
+\caption{Shell programs covered in this experiment}
+\end{table}
+
+\subsection{Program 4.1: Even or Odd}
+
+\labaim{To read an integer and determine whether it is even or odd.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number \texttt{n}.
+    \item Compute the remainder \texttt{r = n \% 2}.
+    \item If \texttt{r} is zero, print that \texttt{n} is even.
+    \item Otherwise print that \texttt{n} is odd.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Even or odd check (\texttt{Programs/08\_even\_or\_odd.sh})}]{Programs/08_even_or_odd.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 08_even_or_odd.sh
+Enter a number:
+14
+14 is an even number.
+$ bash 08_even_or_odd.sh
+Enter a number:
+7
+7 is an odd number.
+\end{lstlisting}
+
+\labres{The script correctly classified 14 as even and 7 as odd using the remainder operator.}
+
+\subsection{Program 4.2: Leap Year}
+
+\labaim{To read a year and determine whether it is a leap year.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the year \texttt{year}.
+    \item A year is a leap year if it is divisible by 400, or if it is divisible by 4 but not by 100.
+    \item If the condition is true, print that the year is a leap year.
+    \item Otherwise print that it is not a leap year.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Leap-year check (\texttt{Programs/09\_leap\_year.sh})}]{Programs/09_leap_year.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 09_leap_year.sh
+Enter a year:
+2024
+2024 is a leap year.
+$ bash 09_leap_year.sh
+Enter a year:
+1900
+1900 is not a leap year.
+\end{lstlisting}
+
+\labres{The script applied the complete Gregorian rule: 2024 is a leap year, while the century year 1900 is not.}
+
+\subsection{Program 4.3: Factorial of a Number}
+
+\labaim{To read a non-negative integer and compute its factorial using a loop.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number \texttt{n}.
+    \item If \texttt{n} is negative, report that the factorial is not defined and exit.
+    \item Initialise \texttt{fact = 1}.
+    \item For \texttt{i = 2} to \texttt{n}, multiply \texttt{fact} by \texttt{i}.
+    \item Print \texttt{fact}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Factorial of a number (\texttt{Programs/10\_factorial.sh})}]{Programs/10_factorial.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 10_factorial.sh
+Enter a number:
+5
+Factorial of 5 = 120
+\end{lstlisting}
+
+\labres{The factorial of 5 was computed as $1 \times 2 \times 3 \times 4 \times 5 = 120$.}
+
+\subsection{Program 4.4: Swapping Two Integers}
+
+\labaim{To read two integers and interchange their values using a temporary variable.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the values \texttt{a} and \texttt{b}.
+    \item Print the values before swapping.
+    \item Store \texttt{a} in the temporary variable \texttt{temp}.
+    \item Assign \texttt{b} to \texttt{a}, and \texttt{temp} to \texttt{b}.
+    \item Print the values after swapping.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Swapping two integers (\texttt{Programs/11\_swap\_two\_integers.sh})}]{Programs/11_swap_two_integers.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 11_swap_two_integers.sh
+Enter two integers:
+10 20
+Before swapping: a = 10, b = 20
+After swapping:  a = 20, b = 10
+\end{lstlisting}
+
+\labres{The values 10 and 20 were interchanged correctly with the help of a temporary variable.}
+
+\subsection{Program 4.5: Fibonacci Series}
+
+\labaim{To print the first \texttt{n} terms of the Fibonacci series.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number of terms \texttt{n}.
+    \item Initialise the first two terms \texttt{a = 0} and \texttt{b = 1}.
+    \item Repeat \texttt{n} times: print \texttt{a}, compute \texttt{c = a + b}, set \texttt{a = b}, and set \texttt{b = c}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Fibonacci series (\texttt{Programs/01\_fibonacci.sh})}]{Programs/01_fibonacci.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 01_fibonacci.sh
+Enter the number of terms:
+8
+Fibonacci Series:
+0 1 1 2 3 5 8 13
+\end{lstlisting}
+
+\labres{The first eight Fibonacci terms were generated by repeatedly adding the previous two terms.}
+
+\subsection{Program 4.6: Palindrome String}
+
+\labaim{To read a string and determine whether it is a palindrome.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the string \texttt{str}.
+    \item Reverse the string using \texttt{rev} and store the result in \texttt{rev\_str}.
+    \item Compare \texttt{str} with \texttt{rev\_str}.
+    \item If they are equal, print that the string is a palindrome; otherwise print that it is not.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Palindrome check (\texttt{Programs/02\_palindrome.sh})}]{Programs/02_palindrome.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 02_palindrome.sh
+Enter a string:
+madam
+The string is a palindrome.
+$ bash 02_palindrome.sh
+Enter a string:
+operating
+The string is not a palindrome.
+\end{lstlisting}
+
+\labres{The string \texttt{madam} read the same in both directions and was identified as a palindrome, while \texttt{operating} was not.}
+
+\subsection{Program 4.7: Power of a Number}
+
+\labaim{To compute \texttt{base} raised to the power \texttt{exponent} by repeated multiplication.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read \texttt{base} and \texttt{exponent}.
+    \item Initialise \texttt{result = 1}.
+    \item Repeat \texttt{exponent} times: multiply \texttt{result} by \texttt{base}.
+    \item Print \texttt{base\^{}exponent = result}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Power of a number (\texttt{Programs/03\_power.sh})}]{Programs/03_power.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 03_power.sh
+Enter the base:
+2
+Enter the exponent:
+10
+2^10 = 1024
+\end{lstlisting}
+
+\labres{The value $2^{10}$ was computed as 1024 by multiplying the base ten times.}
+
+\subsection{Program 4.8: Second-Largest Number}
+
+\labaim{To find the largest and second-largest values in a list of integers.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the list of numbers into an array.
+    \item Initialise \texttt{largest} and \texttt{second} to the first element.
+    \item For every number in the array:
+    \begin{itemize}
+        \item if it is greater than \texttt{largest}, move \texttt{largest} to \texttt{second} and store the number in \texttt{largest};
+        \item otherwise, if it is greater than \texttt{second} and different from \texttt{largest}, store it in \texttt{second}.
+    \end{itemize}
+    \item Print \texttt{largest} and \texttt{second}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Second-largest number (\texttt{Programs/04\_second\_largest.sh})}]{Programs/04_second_largest.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 04_second_largest.sh
+Enter the numbers separated by spaces:
+10 45 23 89 12
+Largest number: 89
+Second-largest number: 45
+\end{lstlisting}
+
+\labres{The largest value 89 and the second-largest value 45 were found in a single pass over the list.}
+
+\subsection{Program 4.9: Prime Number}
+
+\labaim{To read an integer and determine whether it is prime.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number \texttt{n}.
+    \item If \texttt{n < 2}, print that it is not prime and exit.
+    \item For \texttt{i = 2} while \texttt{i * i <= n}, check whether \texttt{n \% i == 0}.
+    \item If a divisor is found, print that \texttt{n} is not prime and exit.
+    \item If no divisor is found, print that \texttt{n} is prime.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Prime-number check (\texttt{Programs/05\_prime.sh})}]{Programs/05_prime.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 05_prime.sh
+Enter a number:
+29
+29 is a prime number.
+\end{lstlisting}
+
+\labres{The number 29 was tested up to $\lfloor\sqrt{29}\rfloor = 5$; no divisor was found, so it is prime.}
+
+\subsection{Program 4.10: Sum of Digits}
+
+\labaim{To compute the sum of the decimal digits of a positive integer.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number \texttt{n}.
+    \item Initialise \texttt{sum = 0}.
+    \item While \texttt{n > 0}:
+    \begin{itemize}
+        \item extract the last digit with \texttt{digit = n \% 10};
+        \item add \texttt{digit} to \texttt{sum};
+        \item remove the last digit with \texttt{n = n / 10}.
+    \end{itemize}
+    \item Print \texttt{sum}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Sum of digits (\texttt{Programs/06\_sum\_of\_digits.sh})}]{Programs/06_sum_of_digits.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 06_sum_of_digits.sh
+Enter a number:
+4567
+Sum of digits = 22
+\end{lstlisting}
+
+\labres{The digits $4 + 5 + 6 + 7$ produced the sum 22.}
+
+\subsection{Program 4.11: Multiplication Table}
+
+\labaim{To display the multiplication table of a number from 1 to 10.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the script and read the number \texttt{n}.
+    \item For \texttt{i = 1} to 10, print \texttt{n} $\times$ \texttt{i} and the product \texttt{n * i}.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=bashstyle,caption={Multiplication table (\texttt{Programs/07\_multiplication\_table.sh})}]{Programs/07_multiplication_table.sh}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+$ bash 07_multiplication_table.sh
+Enter a number:
+7
+Multiplication table of 7:
+7 x 1 = 7
+7 x 2 = 14
+7 x 3 = 21
+7 x 4 = 28
+7 x 5 = 35
+7 x 6 = 42
+7 x 7 = 49
+7 x 8 = 56
+7 x 9 = 63
+7 x 10 = 70
+\end{lstlisting}
+
+\labres{The multiplication table of 7 was displayed for the multipliers 1 through 10.}
