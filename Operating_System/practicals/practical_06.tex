@@ -1,0 +1,83 @@
+\section{Experiment 6: Producer--Consumer Problem using Semaphores}
+\label{exp:producerconsumer}
+
+\subsection*{Aim}
+To simulate the producer--consumer problem with a bounded buffer using semaphores for synchronization and mutual exclusion.
+
+\subsection*{Theory}
+The \textbf{producer--consumer problem} is a classical process-synchronization problem. A producer process generates items and places them in a bounded buffer; a consumer process removes items from the buffer and uses them. The buffer can hold at most $N$ items. Two conditions must be satisfied:
+\begin{itemize}
+    \item The producer must not insert an item when the buffer is full.
+    \item The consumer must not remove an item when the buffer is empty.
+\end{itemize}
+If both processes access the buffer without synchronization, a \emph{race condition} can occur and the buffer state can become inconsistent. The critical section must therefore be protected by mutual exclusion, and the producer and consumer must coordinate through the number of full and empty slots.
+
+\paragraph{Semaphores.}
+A semaphore is an integer variable accessed only through two atomic operations: \texttt{wait(S)} (also called $P$) decrements the value and blocks while it is zero, and \texttt{signal(S)} (also called $V$) increments the value and wakes a waiting process. This simulation uses three semaphores:
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\small
+\begin{tabularx}{\textwidth}{|l|c|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Semaphore} & \textbf{Initial value} & \textbf{Meaning} \\ \hline
+\texttt{mutex} & 1 & Protects the critical section (buffer access). \\ \hline
+\texttt{full} & 0 & Number of items currently in the buffer. \\ \hline
+\texttt{empty} & $N = 3$ & Number of free slots in the buffer. \\ \hline
+\end{tabularx}
+\caption{Semaphores used in the bounded-buffer solution.}
+\end{table}
+
+\paragraph{Order of operations.}
+The producer executes \texttt{wait(empty)}, \texttt{wait(mutex)}, inserts an item, then \texttt{signal(mutex)} and \texttt{signal(full)}. The consumer executes \texttt{wait(full)}, \texttt{wait(mutex)}, removes an item, then \texttt{signal(mutex)} and \texttt{signal(empty)}. Reversing the order of the two waits can cause a deadlock, so the resource semaphore is acquired before the mutex.
+
+\begin{infobox}[Implementation note]
+The supplied program is a menu-driven single-process simulation. The semaphore operations are implemented as simple integer increments and decrements, and the main loop checks \texttt{empty > 0} or \texttt{full > 0} before calling the producer or consumer. It therefore demonstrates the protocol rather than real concurrent threads.
+\end{infobox}
+
+\subsection{Program 6.1: Bounded-Buffer Producer--Consumer Simulation}
+
+\labaim{To simulate the insertion and removal of items in a buffer of size 3 using the semaphore protocol.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and initialize \texttt{mutex = 1}, \texttt{full = 0}, \texttt{empty = 3} and \texttt{item = 0}.
+    \item Display the menu: produce, consume or exit.
+    \item For a produce request, check that \texttt{empty > 0}. If the buffer is full, report that fact.
+    \item Otherwise execute \texttt{wait(mutex)}, \texttt{wait(empty)}, \texttt{signal(full)}, insert and print the new item, and finally \texttt{signal(mutex)}.
+    \item For a consume request, check that \texttt{full > 0}. If the buffer is empty, report that fact.
+    \item Otherwise execute \texttt{wait(mutex)}, \texttt{wait(full)}, \texttt{signal(empty)}, remove and print the item, and finally \texttt{signal(mutex)}.
+    \item Repeat the menu until the user chooses exit, then stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={Producer--consumer simulation using semaphores (Programs/expt\_6.c)}]{Programs/expt_6.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+1. Produce
+2. Consume
+3. Exit
+Choice: 1
+Producer produced item 1
+
+1. Produce
+2. Consume
+3. Exit
+Choice: 1
+Producer produced item 2
+
+1. Produce
+2. Consume
+3. Exit
+Choice: 2
+Consumer consumed item 2
+
+1. Produce
+2. Consume
+3. Exit
+Choice: 3
+\end{lstlisting}
+
+\labres{The producer inserted items only while free slots were available, the consumer removed items only while the buffer was non-empty, and the mutex protected every buffer operation. The program demonstrated the semaphore-based producer--consumer protocol correctly.}

@@ -1,6 +1,6 @@
-# Write a script to print Fibonacci series up to n terms 
-
 #!/bin/bash
+
+# Write a script to print Fibonacci series up to n terms
 
 echo "Enter the number of terms:"
 read n

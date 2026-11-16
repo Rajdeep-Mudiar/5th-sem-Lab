@@ -1,0 +1,264 @@
+\documentclass[12pt,a4paper]{article}
+
+% =========================================================================
+%  OPERATING SYSTEMS LABORATORY RECORD
+%  Gauhati University -- Department of Information Technology
+% =========================================================================
+
+% --- Essential Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in,headheight=15pt]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{hyperref}
+
+% --- Directories for images and screenshots ---
+\graphicspath{{./images/}{./screenshots/}}
+
+% --- Color Definitions ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codebg}{RGB}{246,249,247}
+\definecolor{accentgreen}{RGB}{18,92,70}
+\definecolor{accentlight}{RGB}{232,243,238}
+\definecolor{shellkeyword}{RGB}{150,60,0}
+\definecolor{shellstring}{RGB}{160,45,45}
+\definecolor{shellcomment}{RGB}{95,115,105}
+\definecolor{ckeyword}{RGB}{0,70,160}
+\definecolor{cstring}{RGB}{160,45,45}
+\definecolor{ccomment}{RGB}{95,115,105}
+
+% --- Hyperref Setup ---
+\hypersetup{
+    plainpages=false,
+    colorlinks=true,
+    linkcolor=accentgreen,
+    filecolor=magenta,
+    urlcolor=accentgreen,
+    pdftitle={Operating Systems Practical Record - Jyotirmoy Das},
+    pdfauthor={Jyotirmoy Das}
+}
+
+% --- Paragraph and list spacing ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlength{\leftmargini}{1.5em}
+\setlength{\leftmarginii}{1.2em}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\emergencystretch}{2em}
+
+% --- Listings: common code style ---
+\lstdefinestyle{codebase}{
+    backgroundcolor=\color{codebg},
+    numberstyle=\tiny\color{codegray},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=8pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    frame=single,
+    rulecolor=\color{black!15},
+    aboveskip=6pt,
+    belowskip=6pt
+}
+
+% --- Shell script style ---
+\lstdefinestyle{bashstyle}{
+    style=codebase,
+    language=bash,
+    commentstyle=\color{shellcomment}\itshape,
+    keywordstyle=\color{shellkeyword}\bfseries,
+    stringstyle=\color{shellstring},
+    morekeywords={if,then,else,elif,fi,for,while,do,done,read,echo,exit,function,case,esac}
+}
+
+% --- C program style ---
+\lstdefinestyle{cstyle}{
+    style=codebase,
+    language=C,
+    commentstyle=\color{ccomment}\itshape,
+    keywordstyle=\color{ckeyword}\bfseries,
+    stringstyle=\color{cstring},
+    morekeywords={printf,scanf,fprintf,perror,malloc,calloc,free,fopen,fclose,fgets,fread,fwrite,strstr,strcmp,strlen,strcpy,strcspn,opendir,readdir,closedir,getpid,fork,exit}
+}
+
+% --- Terminal / sample output style ---
+\lstdefinestyle{outputstyle}{
+    backgroundcolor=\color{black!3},
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+    numbers=none,
+    frame=single,
+    rulecolor=\color{black!20},
+    showspaces=false,
+    showstringspaces=false,
+    tabsize=4,
+    aboveskip=5pt,
+    belowskip=6pt
+}
+\lstdefinestyle{terminal}{style=outputstyle}
+\lstset{style=cstyle}
+
+% --- Custom Header and Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textsf{\footnotesize Operating Systems Lab}}
+\fancyhead[R]{\textsf{\footnotesize Practical Record}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% --- Custom callout box ---
+\newtcolorbox{infobox}[1][]{
+    colback=accentlight,
+    colframe=accentgreen!70,
+    fonttitle=\bfseries,
+    title={#1},
+    boxrule=0.7pt,
+    arc=3pt,
+    left=7pt,right=7pt,top=4pt,bottom=4pt
+}
+
+% --- Section formatting ---
+\titleformat{\section}{\raggedright\Large\bfseries\color{accentgreen}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}{\raggedright\large\bfseries\color{accentgreen}}{\thesubsection}{0.8em}{}
+\titlespacing*{\section}{0pt}{0pt}{10pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% --- Compact headings used by the program write-ups ---
+\newcommand{\labaim}[1]{\paragraph{Aim.} #1}
+\newcommand{\labalg}[1]{\paragraph{Algorithm.} #1}
+\newcommand{\labres}[1]{\paragraph{Result.} #1}
+
+% --- Table of contents depth ---
+\setcounter{tocdepth}{1}
+
+\begin{document}
+
+% =========================================================================
+% COVER PAGE
+% =========================================================================
+\pagenumbering{Alph}
+\begin{titlepage}
+\begin{center}
+    \vspace*{0.3cm}
+
+    % --- Course and Journal Title ---
+    {\large \textbf{COURSE: OPERATING SYSTEMS LAB (IT-313)}}\\[0.35cm]
+    {\LARGE \bfseries PRACTICAL JOURNAL}\par
+
+    \vfill
+
+    % --- Degree Submission Clause ---
+    {\normalsize \textit{A Practical Journal Submitted}\\
+    \textit{in Partial Fulfillment of the Requirements for the Degree of}}\\[0.45cm]
+    {\Large \bfseries BACHELOR OF TECHNOLOGY}\\[0.3cm]
+    {\normalsize \textit{in}}\\[0.3cm]
+    {\large \bfseries COMPUTER SCIENCE AND ENGINEERING}\par
+
+    \vfill
+
+    % --- Submitted By ---
+    {\sl \textbf{Submitted By}}\\[1.5ex]
+    {\sffamily \large \textbf{Jyotirmoy Das}}\\[0.5ex]
+    {\sffamily \textbf{Roll No.- 240103002}}\par
+
+    \vfill
+
+    % --- Institutional Emblem ---
+    \includegraphics[height=2.6cm,keepaspectratio]{gu-logo-black.png}\par
+
+    \vfill
+
+    % --- Supervision ---
+    {\sl \textbf{Under the supervision of}}\\[1.5ex]
+    {\sffamily \large \textbf{Prof. Rita Chakraborty}}\par
+
+    \vfill
+    \vspace{0.2cm}
+
+    % --- Department and University ---
+    {\large \bfseries DEPARTMENT OF INFORMATION TECHNOLOGY}\\[0.8ex]
+    {\normalsize \bfseries GAUHATI UNIVERSITY}\\[0.6ex]
+    {\normalsize Guwahati, Assam -- 781014, INDIA}\\[1.2ex]
+    {\normalsize Academic Session: 2026--2027}
+\end{center}
+\end{titlepage}
+
+% =========================================================================
+% FRONT MATTER
+% =========================================================================
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% --- Laboratory Record Index ---
+\input{index.tex}
+
+\newpage
+
+% --- Table of Contents ---
+\pdfbookmark[1]{Contents}{toc}
+\tableofcontents
+\newpage
+
+% =========================================================================
+% EXPERIMENTS
+% =========================================================================
+\pagenumbering{arabic}
+
+\input{practicals/practical_01.tex}
+
+\newpage
+\input{practicals/practical_02.tex}
+
+\newpage
+\input{practicals/practical_03.tex}
+
+\newpage
+\input{practicals/practical_04.tex}
+
+\newpage
+\input{practicals/practical_05.tex}
+
+\newpage
+\input{practicals/practical_06.tex}
+
+\newpage
+\input{practicals/practical_07.tex}
+
+\newpage
+\input{appendix.tex}
+
+\newpage
+\section*{References}
+\addcontentsline{toc}{section}{References}
+\sloppy
+\begin{enumerate}
+    \item A. Silberschatz, P. B. Galvin, and G. Gagne, \textit{Operating System Concepts}, 10th ed., Wiley, 2018.
+    \item A. S. Tanenbaum and H. Bos, \textit{Modern Operating Systems}, 4th ed., Pearson, 2015.
+    \item W. Stallings, \textit{Operating Systems: Internals and Design Principles}, 9th ed., Pearson, 2018.
+    \item M. J. Bach, \textit{The Design of the UNIX Operating System}, Prentice Hall, 1986.
+    \item Linux man pages: \texttt{man opendir}, \texttt{man readdir}, \texttt{man fork}, \texttt{man grep}, \texttt{man sem\_overview}.
+    \item The Linux Documentation Project, \textit{Bash Guide for Beginners}, \url{https://tldp.org/LDP/Bash-Beginners-Guide/html/}.
+\end{enumerate}
+
+\end{document}

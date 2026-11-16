@@ -1,6 +1,6 @@
-# Create a script to calculate the power of a number
-
 #!/bin/bash
+
+# Create a script to calculate the power of a number
 
 echo "Enter the base:"
 read base

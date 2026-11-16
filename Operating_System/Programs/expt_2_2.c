@@ -21,7 +21,9 @@ int main(int argc, char *argv[])
     fflush(stdout);
 
 #ifdef _WIN32
-    if (_spawnl(_P_WAIT, argv[0], argv[0], "child", NULL) == -1) {
+    const char *child_args[] = { argv[0], "child", NULL };
+
+    if (_spawnv(_P_WAIT, argv[0], child_args) == -1) {
         perror("spawn");
         return 1;
     }

@@ -1,0 +1,214 @@
+\section{Experiment 5: CPU Scheduling Algorithms}
+\label{exp:scheduling}
+
+\subsection*{Aim}
+To implement the Priority, Round Robin, First-Come-First-Served (FCFS) and Shortest-Job-First (SJF) CPU scheduling algorithms in C, and to compute the waiting time, turnaround time and their averages for a set of processes.
+
+\subsection*{Theory}
+The operating system must decide which process in the ready queue should receive the CPU next. This decision is made by the \textbf{CPU scheduler}, and the selected process is given control by the \textbf{dispatcher}. A scheduling algorithm is judged by criteria such as CPU utilisation, throughput, waiting time, turnaround time and response time.
+
+For a process $i$, let $A_i$ be its arrival time, $B_i$ its CPU burst time, $S_i$ the time at which it first gets the CPU, and $C_i$ the time at which it completes. Then
+\begin{equation*}
+    WT_i = S_i - A_i, \qquad TAT_i = C_i - A_i = WT_i + B_i .
+\end{equation*}
+The programs in this experiment assume that all processes arrive at time $0$. Therefore the waiting time of a process is simply its start time, and its turnaround time is its completion time. The average waiting time and average turnaround time are obtained by summing the individual values and dividing by the number of processes.
+
+\paragraph{Priority scheduling.}
+Each process is associated with a priority. The ready process with the highest priority is selected next. In the program, a \emph{smaller} priority number means a higher priority, so the processes are sorted in ascending order of priority. Ties are broken by process ID. The implementation is non-preemptive: once a process starts, it runs to completion. Priority scheduling can starve low-priority processes; \emph{aging} is a common remedy.
+
+\paragraph{Round Robin scheduling.}
+Each process is allowed to run for at most one \emph{time quantum}. If it does not finish within the quantum, it is preempted and placed at the end of the ready queue. The program repeatedly scans the processes in order, giving each unfinished process a slice of \texttt{min(remaining, quantum)} time units. Round Robin is preemptive and provides good response time, but a very small quantum increases context-switching overhead.
+
+\paragraph{First-Come-First-Served scheduling.}
+Processes are dispatched in the order in which they arrive. The first process has zero waiting time; every later process waits for the sum of the burst times of all processes ahead of it. FCFS is simple and non-preemptive, but a long process at the front can delay many short processes, an effect known as the \emph{convoy effect}.
+
+\paragraph{Shortest-Job-First scheduling.}
+The process with the smallest CPU burst is selected next. The non-preemptive version waits for the running process to finish; the preemptive version is called Shortest-Remaining-Time-First (SRTF). SJF gives the minimum average waiting time for a given set of processes, but it requires knowledge of the next burst and can starve long processes. The program sorts the processes by burst time and then executes them in that order.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabularx}{\textwidth}{|l|c|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Algorithm} & \textbf{Preemptive?} & \textbf{Selection rule} & \textbf{Main characteristic} \\ \hline
+FCFS & No & Earliest arrival & Simple; convoy effect. \\ \hline
+SJF & No & Shortest burst & Minimum average waiting time; starvation. \\ \hline
+Priority & No & Highest priority & Priority-based service; starvation. \\ \hline
+Round Robin & Yes & Fixed time quantum & Fair response; context-switch overhead. \\ \hline
+\end{tabularx}
+\caption{Comparison of the four scheduling algorithms.}
+\end{table}
+
+\subsection{Program 5.1: Priority Scheduling}
+
+\labaim{To schedule processes according to priority and compute their waiting and turnaround times.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and read the number of processes \texttt{n}.
+    \item For each process, read its burst time and priority; assign process ID \texttt{i + 1}.
+    \item Sort the processes in ascending order of priority, breaking ties by process ID.
+    \item Set the elapsed time to zero. For each process in sorted order, set its waiting time to the elapsed time, set its turnaround time to waiting time plus burst time, and add the burst time to the elapsed time.
+    \item Accumulate the total waiting and turnaround times and print the process table.
+    \item Print the totals and averages, then stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={Priority scheduling (Programs/expt\_5\_a.c)}]{Programs/expt_5_a.c}
+
+\paragraph{Sample Input and Output.}
+\begin{lstlisting}[style=terminal]
+Priority scheduling
+Enter number of processes: 4
+Process 1 (burst time priority): 10 2
+Process 2 (burst time priority): 5 1
+Process 3 (burst time priority): 8 3
+Process 4 (burst time priority): 6 2
+
+PID  Priority  Burst  Wait  Turnaround
+  2         1      5     0           5
+  1         2     10     5          15
+  4         2      6    15          21
+  3         3      8    21          29
+
+Total waiting time    : 41
+Average waiting time  : 10.25
+Total turnaround time : 70
+Average turnaround    : 17.50
+\end{lstlisting}
+
+\labres{The processes were executed in ascending order of priority number. The average waiting time was 10.25 and the average turnaround time was 17.50 time units.}
+
+\subsection{Program 5.2: Round Robin Scheduling}
+
+\labaim{To schedule processes using a fixed time quantum and compute their waiting and turnaround times.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and read the number of processes and the time quantum.
+    \item Read the burst time of each process and initialise its remaining time to the burst time.
+    \item Set the current time and the number of completed processes to zero.
+    \item While some process is unfinished, visit the processes in order. For each unfinished process, run it for \texttt{min(remaining, quantum)} units, print the Gantt-chart interval, and reduce its remaining time.
+    \item When a process reaches zero remaining time, set its turnaround time to the current time and its waiting time to turnaround time minus burst time; mark it completed.
+    \item After all processes finish, print the table, totals and averages, then stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={Round Robin scheduling (Programs/expt\_5\_b.c)}]{Programs/expt_5_b.c}
+
+\paragraph{Sample Input and Output.}
+\begin{lstlisting}[style=terminal]
+Round Robin scheduling
+Enter number of processes: 4
+Enter time quantum: 3
+Burst time of process 1: 8
+Burst time of process 2: 4
+Burst time of process 3: 9
+Burst time of process 4: 5
+
+Gantt chart:
+P1 [0 - 3]
+P2 [3 - 6]
+P3 [6 - 9]
+P4 [9 - 12]
+P1 [12 - 15]
+P2 [15 - 16]
+P3 [16 - 19]
+P4 [19 - 21]
+P1 [21 - 23]
+P3 [23 - 26]
+
+PID  Burst  Wait  Turnaround
+  1      8    15          23
+  2      4    12          16
+  3      9    17          26
+  4      5    16          21
+
+Total waiting time    : 60
+Average waiting time  : 15.00
+Total turnaround time : 86
+Average turnaround    : 21.50
+\end{lstlisting}
+
+\labres{The processes were executed cyclically with a quantum of 3. The average waiting time was 15.00 and the average turnaround time was 21.50 time units.}
+
+\subsection{Program 5.3: First-Come-First-Served Scheduling}
+
+\labaim{To schedule processes in arrival order and compute their waiting and turnaround times.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and read the number of processes.
+    \item Read the burst time of each process in order.
+    \item Set the waiting time of the first process to zero.
+    \item For each later process, set its waiting time to the previous process's waiting time plus the previous process's burst time.
+    \item Set each turnaround time to waiting time plus burst time.
+    \item Print the table, totals and averages, then stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={FCFS scheduling (Programs/expt\_5\_c.c)}]{Programs/expt_5_c.c}
+
+\paragraph{Sample Input and Output.}
+\begin{lstlisting}[style=terminal]
+FCFS scheduling
+Enter number of processes: 4
+Burst time of process 1: 5
+Burst time of process 2: 3
+Burst time of process 3: 8
+Burst time of process 4: 2
+
+PID  Burst  Wait  Turnaround
+  1      5     0           5
+  2      3     5           8
+  3      8     8          16
+  4      2    16          18
+
+Total waiting time    : 29
+Average waiting time  : 7.25
+Total turnaround time : 47
+Average turnaround    : 11.75
+\end{lstlisting}
+
+\labres{The processes were served in the order of arrival. The average waiting time was 7.25 and the average turnaround time was 11.75 time units.}
+
+\subsection{Program 5.4: Shortest-Job-First Scheduling}
+
+\labaim{To schedule processes in increasing order of burst time and compute their waiting and turnaround times.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and read the number of processes.
+    \item Read the burst time of each process and assign process IDs.
+    \item Sort the processes in ascending order of burst time.
+    \item Set the elapsed time to zero. For each process in sorted order, set its waiting time to the elapsed time, set its turnaround time to waiting time plus burst time, and add the burst time to the elapsed time.
+    \item Accumulate the totals and print the process table.
+    \item Print the totals and averages, then stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={SJF scheduling (Programs/expt\_5\_d.c)}]{Programs/expt_5_d.c}
+
+\paragraph{Sample Input and Output.}
+\begin{lstlisting}[style=terminal]
+SJF scheduling
+Enter number of processes: 4
+Burst time of process 1: 6
+Burst time of process 2: 8
+Burst time of process 3: 7
+Burst time of process 4: 3
+
+PID  Burst  Wait  Turnaround
+  4      3     0           3
+  1      6     3           9
+  3      7     9          16
+  2      8    16          24
+
+Total waiting time    : 28
+Average waiting time  : 7.00
+Total turnaround time : 52
+Average turnaround    : 13.00
+\end{lstlisting}
+
+\labres{The processes were executed from shortest to longest burst. The average waiting time was 7.00 and the average turnaround time was 13.00 time units.}

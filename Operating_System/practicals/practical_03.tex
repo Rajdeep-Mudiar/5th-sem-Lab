@@ -1,0 +1,111 @@
+\section{Experiment 3: Simulation of UNIX Commands}
+\label{exp:simulate}
+
+\subsection*{Aim}
+To write C programs that simulate the behaviour of the UNIX commands \texttt{ls} and \texttt{grep}.
+
+\subsection*{Theory}
+UNIX commands are ordinary programs that use system calls and library functions. The \texttt{ls} command reads a directory and prints its entries; a user program can reproduce this by calling \texttt{opendir} and \texttt{readdir}. The \texttt{grep} command reads a file line by line and prints the lines that contain a given pattern; a user program can reproduce this with \texttt{fgets} and \texttt{strstr}.
+
+The simulations in this experiment are deliberately small. They reproduce the core visible behaviour of the commands, not every option of the real utilities.
+
+\subsection{Simulation of the \texttt{ls} Command}
+
+\paragraph{Aim.}
+To list the contents of a directory supplied as a command-line argument.
+
+\paragraph{Algorithm.}
+\begin{enumerate}
+    \item Start the program and check that exactly one argument (the directory path) is supplied.
+    \item Open the directory with \texttt{opendir(argv[1])}. If it fails, print an error and exit.
+    \item Print a heading containing the directory name.
+    \item Call \texttt{readdir} repeatedly and print the name of each entry.
+    \item Close the directory stream with \texttt{closedir}.
+    \item Stop the program.
+\end{enumerate}
+
+\paragraph{Program.}
+\lstinputlisting[style=cstyle, caption={Simulation of the \texttt{ls} command (\texttt{expt\_3\_1.c})}]{Programs/expt_3_1.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=outputstyle, caption={Listing a directory with the simulated \texttt{ls}}]
+$ gcc expt_3_1.c -o expt_3_1
+$ ./expt_3_1 .
+Contents of .:
+.
+..
+01_fibonacci.sh
+02_palindrome.sh
+03_power.sh
+04_second_largest.sh
+05_prime.sh
+06_sum_of_digits.sh
+07_multiplication_table.sh
+08_even_or_odd.sh
+09_leap_year.sh
+10_factorial.sh
+11_swap_two_integers.sh
+expt_3_1.c
+expt_3_1
+\end{lstlisting}
+
+\subsection{Simulation of the \texttt{grep} Command}
+
+\paragraph{Aim.}
+To search for a word in a file and print every matching line together with its line number.
+
+\paragraph{Algorithm.}
+\begin{enumerate}
+    \item Start the program and check that a file name and a search word are supplied.
+    \item Open the file in read mode. If it cannot be opened, print an error and exit.
+    \item Read each line with \texttt{fgets} and increment the line counter.
+    \item Remove the trailing newline from the line.
+    \item Use \texttt{strstr(line, word)} to test whether the line contains the word.
+    \item If a match is found, print the file name, line number, and the line.
+    \item Close the file and stop the program.
+\end{enumerate}
+
+\paragraph{Program.}
+\lstinputlisting[style=cstyle, caption={Simulation of the \texttt{grep} command (\texttt{expt\_3\_2.c})}]{Programs/expt_3_2.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=outputstyle, caption={Searching for the word \texttt{Fibonacci} in a file}]
+$ gcc expt_3_2.c -o expt_3_2
+$ ./expt_3_2 01_fibonacci.sh Fibonacci
+01_fibonacci.sh:3: # Write a script to print Fibonacci series up to n
+terms
+01_fibonacci.sh:11: echo "Fibonacci Series:"
+\end{lstlisting}
+
+\subsection{Counting Occurrences with a \texttt{grep}-style Program}
+
+\paragraph{Aim.}
+To search for a pattern in a file, print every matching line, and count the total number of occurrences of the pattern.
+
+\paragraph{Algorithm.}
+\begin{enumerate}
+    \item Start the program and read the file name and the pattern from the command line.
+    \item Open the file and initialise the line number and the total occurrence count to zero.
+    \item Read each line with \texttt{fgets} and increment the line number.
+    \item Repeatedly apply \texttt{strstr} to the line, advancing the search pointer after each match, and count the non-overlapping occurrences.
+    \item If the current line contains at least one match, print the line with its number.
+    \item Add the line's occurrences to the total and continue until end of file.
+    \item Print the total number of occurrences, close the file, and stop.
+\end{enumerate}
+
+\paragraph{Program.}
+\lstinputlisting[style=cstyle, caption={Occurrence counting with a \texttt{grep}-style program (\texttt{expt\_3\_3.c})}]{Programs/expt_3_3.c}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=outputstyle, caption={Counting occurrences of the pattern \texttt{is}}]
+$ gcc expt_3_3.c -o expt_3_3
+$ ./expt_3_3 02_palindrome.sh is
+02_palindrome.sh:3: # Write a script to check if a string is a
+palindrome
+02_palindrome.sh:12:     echo "The string is a palindrome."
+02_palindrome.sh:14:     echo "The string is not a palindrome."
+Total occurrences of "is": 3
+\end{lstlisting}
+
+\subsection*{Result}
+The UNIX commands \texttt{ls} and \texttt{grep} were simulated in C. The programs listed a directory, printed matching lines with line numbers, and counted the total number of pattern occurrences successfully.

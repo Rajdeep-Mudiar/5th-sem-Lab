@@ -1,0 +1,107 @@
+\setcounter{section}{7}
+\section{Experiment 8: Banker's Algorithm for Deadlock Avoidance}
+\label{exp:bankers}
+
+\subsection*{Aim}
+To implement Banker's algorithm and determine whether a given system state is safe, and if so, to find a safe sequence of processes.
+
+\subsection*{Theory}
+A \textbf{deadlock} is a situation in which a set of processes are blocked permanently because each is waiting for a resource held by another. Deadlock can arise only when four conditions hold simultaneously: mutual exclusion, hold-and-wait, no preemption and circular wait. \textbf{Deadlock avoidance} does not prevent these conditions directly; instead, the operating system grants a resource request only when the resulting state remains \emph{safe}.
+
+\paragraph{Safe state.}
+A state is \textbf{safe} if there exists at least one ordering of all processes such that each process can obtain its remaining resource needs from the currently available resources plus the resources released by the processes that finish before it. If no such ordering exists, the state is \textbf{unsafe}. An unsafe state is not necessarily deadlocked, but it may lead to deadlock.
+
+\paragraph{Data structures.}
+For $n$ processes and $r$ resource types:
+\begin{itemize}
+    \item \texttt{Max[i][j]}: maximum demand of process $i$ for resource $j$.
+    \item \texttt{Allocation[i][j]}: resources of type $j$ currently held by process $i$.
+    \item \texttt{Need[i][j] = Max[i][j] - Allocation[i][j]}: additional resources process $i$ may still request.
+    \item \texttt{Available[j]}: resources of type $j$ currently free.
+    \item \texttt{Work[j]}: a working copy of \texttt{Available}.
+    \item \texttt{Finish[i]}: whether process $i$ has completed.
+\end{itemize}
+
+\paragraph{Safety algorithm.}
+\begin{enumerate}
+    \item Set \texttt{Work = Available} and \texttt{Finish[i] = false} for every process.
+    \item Find an unfinished process $i$ such that \texttt{Need}$_i$ is component-wise less than or equal to \texttt{Work}.
+    \item If such a process exists, pretend it finishes: add its allocation to \texttt{Work}, set \texttt{Finish[i] = true}, and append $i$ to the safe sequence.
+    \item Repeat steps 2 and 3 until no more processes can finish.
+    \item If every process has finished, the state is safe and the recorded order is a safe sequence; otherwise the state is unsafe.
+\end{enumerate}
+
+The program below performs the safety check only. A full Banker's algorithm also handles individual resource requests: a request is tentatively granted, the safety algorithm is run, and the allocation is rolled back if the resulting state is unsafe. The safety check is the core of that procedure.
+
+\subsection{Program 8.1: Safety Algorithm}
+
+\labaim{To read the maximum demand, current allocation and available resources, compute the need matrix, and determine a safe sequence.}
+
+\labalg{
+\begin{enumerate}
+    \item Start the program and read the number of processes $n$ and resource types $r$.
+    \item Read the \texttt{Max} matrix, the \texttt{Allocation} matrix and the \texttt{Available} vector.
+    \item Compute \texttt{Need[i][j] = Max[i][j] - Allocation[i][j]} for every process and resource.
+    \item Set \texttt{Work = Available} and mark every process unfinished.
+    \item Search for an unfinished process whose need can be met by \texttt{Work}. If one is found, add its allocation to \texttt{Work}, mark it finished, and record it in the safe sequence.
+    \item Repeat step 5 while progress is possible.
+    \item If all processes are finished, print the safe sequence; otherwise print that the system is unsafe.
+    \item Stop.
+\end{enumerate}
+}
+
+\lstinputlisting[style=cstyle,caption={Banker's algorithm safety check (Programs/expt\_8.c)}]{Programs/expt_8.c}
+
+\paragraph{Sample Input.}
+\begin{lstlisting}[style=terminal]
+Banker's Algorithm
+Enter number of processes: 5
+Enter number of resource types: 3
+Enter the Max matrix (5 x 3):
+7 5 3
+3 2 2
+9 0 2
+2 2 2
+4 3 3
+Enter the Allocation matrix (5 x 3):
+0 1 0
+2 0 0
+3 0 2
+2 1 1
+0 0 2
+Enter Available resources (3 values):
+3 3 2
+\end{lstlisting}
+
+\paragraph{Sample Output.}
+\begin{lstlisting}[style=terminal]
+System is in a safe state.
+Safe sequence: P1 -> P3 -> P4 -> P0 -> P2
+
+Process  Allocation   Max          Need         Available
+P0        0  1  0     7  5  3     7  4  3     3  3  2
+P1        2  0  0     3  2  2     1  2  2
+P2        3  0  2     9  0  2     6  0  0
+P3        2  1  1     2  2  2     0  1  1
+P4        0  0  2     4  3  3     4  3  1
+\end{lstlisting}
+The process labels \texttt{P0} to \texttt{P4} correspond to the five input rows in order.
+
+\paragraph{Verification of the safe sequence.}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\small
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Step} & \textbf{Process} & \textbf{Work before} & \textbf{Need} & \textbf{Work after} \\ \hline
+1 & P1 & 3 3 2 & 1 2 2 & 5 3 2 \\ \hline
+2 & P3 & 5 3 2 & 0 1 1 & 7 4 3 \\ \hline
+3 & P4 & 7 4 3 & 4 3 1 & 7 4 5 \\ \hline
+4 & P0 & 7 4 5 & 7 4 3 & 7 5 5 \\ \hline
+5 & P2 & 7 5 5 & 6 0 0 & 10 5 7 \\ \hline
+\end{tabular}
+\caption{Work vector progression while executing the safe sequence.}
+\end{table}
+
+\labres{The need matrix was computed from the maximum and allocation matrices. The safety algorithm found the safe sequence \texttt{P1 -> P3 -> P4 -> P0 -> P2}, so the given system state is safe.}
