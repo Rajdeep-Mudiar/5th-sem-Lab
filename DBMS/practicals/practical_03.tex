@@ -1,3 +1,6 @@
+% =========================================================================
+% EXPERIMENT 3 - PROBLEM 1: COLLEGE DATABASE DML
+% =========================================================================
 \label{exp:dml}
 \label{exp:dml_prob1}
 \noindent
@@ -109,3 +112,162 @@ GROUP BY dno;
 
 \vspace{0.25cm}
 \noindent\textbf{Result / Observation:}\quad The Data Manipulation Language (DML) commands for the College database were executed successfully in MySQL. Tuples were populated into all relational tables, records were sorted and filtered using joins, and grouped aggregate summaries were computed using \texttt{COUNT()} and \texttt{GROUP BY}.
+
+\newpage
+
+% =========================================================================
+% EXPERIMENT 3 - PROBLEM 2: BANKING ENTERPRISE DATABASE DML
+% =========================================================================
+\label{exp:dml_prob2}
+\noindent
+\begin{center}
+    {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
+    \textbf{Practical No.:} 3 (Problem 2) \hfill \textbf{Date:} 13/10/2026 \hfill \textbf{Page No.:} \thepage
+\end{center}
+\vspace{-0.2cm}
+\hrule
+\vspace{0.35cm}
+
+\subsection*{Question / Problem Statement}
+Consider the database for a banking enterprise. Write and execute Data Manipulation Language (DML) commands in MySQL:
+\begin{enumerate}[noitemsep,topsep=2pt]
+    \item[(i)] Re-create relational tables and insert at least 5 tuples into each relational table.
+    \item[(ii)] Display the branch details.
+    \item[(iii)] List the customers of `Mumbai' city.
+    \item[(iv)] List the male customers of `Kolkata' city.
+    \item[(v)] List the states having more than one branch.
+    \item[(vi)] List the deposit schemes provided by the bank to the customers.
+    \item[(vii)] Delete the entire content of any table.
+\end{enumerate}
+
+\subsection*{1. Schema Setup \& Table Creation}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Re-creating banking relational tables with entity and referential constraints}]
+USE bank;
+
+-- Re-create relational tables adhering to integrity constraints
+CREATE TABLE customer (
+    cid INT PRIMARY KEY, cname VARCHAR(50) NOT NULL, loc VARCHAR(50) NOT NULL,
+    sex CHAR(1) CHECK (sex IN ('M', 'F', 'O')), dob DATE NOT NULL
+);
+CREATE TABLE Bank_brn (
+    bcode INT PRIMARY KEY, bloc VARCHAR(50) NOT NULL, bsate VARCHAR(50) NOT NULL
+);
+CREATE TABLE Deposit (
+    Dacno INT PRIMARY KEY, dtype VARCHAR(30) DEFAULT 'Savings',
+    ddate DATE NOT NULL, damt DECIMAL(12, 2) CHECK (damt >= 0)
+);
+CREATE TABLE Loan (
+    Lacno INT PRIMARY KEY, ltype VARCHAR(30) NOT NULL,
+    ldate DATE NOT NULL, lamt DECIMAL(12, 2) CHECK (lamt > 0)
+);
+CREATE TABLE Accounts_in (
+    Bcode INT, cid INT, PRIMARY KEY (Bcode, cid),
+    FOREIGN KEY (Bcode) REFERENCES Bank_brn(bcode), FOREIGN KEY (cid) REFERENCES customer(cid)
+);
+CREATE TABLE depositor (
+    cid INT, dacno INT, PRIMARY KEY (cid, dacno),
+    FOREIGN KEY (cid) REFERENCES customer(cid), FOREIGN KEY (dacno) REFERENCES Deposit(Dacno)
+);
+CREATE TABLE borrower (
+    cid INT, lacno INT, PRIMARY KEY (cid, lacno),
+    FOREIGN KEY (cid) REFERENCES customer(cid), FOREIGN KEY (lacno) REFERENCES Loan(Lacno)
+);
+\end{lstlisting}
+
+\newpage
+
+\subsection*{2. Tuple Insertion and DML Query Operations}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Populating records, conditional filtering, grouped aggregations, and deletion}]
+-- (i) Insert at least 5 tuples into each relational table
+INSERT INTO customer VALUES
+(1, 'Rahul', 'Mumbai', 'M', '1990-04-12'), (2, 'Ananya', 'Mumbai', 'F', '1995-08-23'),
+(3, 'Sourav', 'Kolkata', 'M', '1988-12-05'), (4, 'Arjun', 'Kolkata', 'M', '1992-06-18'),
+(5, 'Meera', 'Chennai', 'F', '1998-01-30');
+INSERT INTO Bank_brn VALUES
+(10, 'Andheri', 'Maharashtra'), (20, 'Bandra', 'Maharashtra'),
+(30, 'Salt Lake', 'West Bengal'), (40, 'Adyar', 'Tamil Nadu'),
+(50, 'Connaught Place', 'Delhi');
+INSERT INTO Deposit VALUES
+(1001, 'Savings', '2023-01-15', 50000.00), (1002, 'Fixed Deposit', '2023-02-20', 200000.00),
+(1003, 'Recurring Deposit', '2023-03-10', 15000.00), (1004, 'Savings', '2023-05-05', 75000.00),
+(1005, 'Current', '2023-07-12', 120000.00);
+INSERT INTO Loan VALUES
+(2001, 'Home Loan', '2022-06-01', 2500000.00), (2002, 'Car Loan', '2023-01-10', 600000.00),
+(2003, 'Education Loan', '2021-08-15', 400000.00), (2004, 'Personal Loan', '2023-04-20', 150000.00),
+(2005, 'Home Loan', '2022-11-11', 3000000.00);
+INSERT INTO Accounts_in VALUES (10, 1), (20, 2), (30, 3), (30, 4), (40, 5);
+INSERT INTO depositor VALUES (1, 1001), (2, 1002), (3, 1003), (4, 1004), (5, 1005);
+INSERT INTO borrower VALUES (1, 2001), (2, 2002), (3, 2003), (4, 2004), (5, 2005);
+
+-- (ii) Display the branch details
+SELECT * FROM Bank_brn;
+-- (iii) List the customers of 'Mumbai' city
+SELECT * FROM customer WHERE loc = 'Mumbai';
+-- (iv) List the male customers of 'Kolkata' city
+SELECT * FROM customer WHERE loc = 'Kolkata' AND sex = 'M';
+-- (v) List the state having more than one branch
+SELECT bsate, COUNT(bcode) AS branch_count
+FROM Bank_brn GROUP BY bsate HAVING COUNT(bcode) > 1;
+-- (vi) List the deposit schemes provided by the bank to the customers
+SELECT DISTINCT dtype AS deposit_scheme FROM Deposit;
+-- (vii) Delete the entire content of any table
+DELETE FROM borrower;
+\end{lstlisting}
+
+\newpage
+
+\subsubsection*{Output Screenshot}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp3-prob2-01.png}
+    \caption{Creation of \texttt{customer}, \texttt{Bank\_brn}, \texttt{Deposit}, and \texttt{Loan} tables with constraints.}
+    \label{fig:exp3_prob2_schema1}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp3-prob2-02.png}
+    \caption{Creation of junction tables (\texttt{Accounts\_in}, \texttt{depositor}, \texttt{borrower}) and verifying via \texttt{SHOW TABLES}.}
+    \label{fig:exp3_prob2_schema2}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Output Screenshot (Cont.)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp3-prob2-03.png}
+    \caption{Populating sample records into \texttt{customer}, \texttt{Bank\_brn}, \texttt{Deposit}, \texttt{Loan}, \texttt{Accounts\_in}, and \texttt{depositor}.}
+    \label{fig:exp3_prob2_insert}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp3-prob2-04.png}
+    \caption{Populating \texttt{borrower}, branch details retrieval, filtering Mumbai customers, Kolkata male customers, and multi-branch states.}
+    \label{fig:exp3_prob2_query1}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Output Screenshot (Cont.)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=9.2cm,keepaspectratio]{Exp3-prob2-05.png}
+    \caption{Retrieval of unique deposit schemes via \texttt{DISTINCT} and deletion of records from \texttt{borrower} table using \texttt{DELETE}.}
+    \label{fig:exp3_prob2_query2}
+\end{figure}
+
+\vspace{0.35cm}
+\noindent\textbf{Result / Observation:}\quad The Data Manipulation Language (DML) commands for the Banking Enterprise database were executed successfully in MySQL. All relational tables were created and populated with sample tuples, queries were executed to inspect branch information, conditional filtering selected specific city and gender subsets, grouped aggregation with \texttt{HAVING} identified states with multiple branches, distinct deposit products were listed, and complete record deletion via \texttt{DELETE} was verified.

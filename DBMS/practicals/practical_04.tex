@@ -1,90 +1,149 @@
+% =========================================================================
+% EXPERIMENT 4 - PROBLEM 1: BANKING ENTERPRISE SUBQUERIES AND JOINS
+% =========================================================================
+\label{exp:subqueries}
 \label{exp:subqueries_joins}
+\label{exp:subqueries_prob1}
 \noindent
 \begin{center}
     {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
-    \textbf{Practical No.:} 4 \hfill \textbf{Date:} 20/10/2026 \hfill \textbf{Page No.:} \thepage
+    \textbf{Practical No.:} 4 (Problem 1) \hfill \textbf{Date:} 20/10/2026 \hfill \textbf{Page No.:} \thepage
 \end{center}
 \vspace{-0.2cm}
 \hrule
 \vspace{0.35cm}
 
 \subsection*{Question / Problem Statement}
-Design, implement, and execute nested subqueries and relational table joins on the \texttt{organisation} database using MySQL:
+Consider the database for a banking enterprise. Design, implement, and execute nested subqueries and relational table joins using MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
-    \item[(i)] Display employees earning more than the average salary.
-    \item[(ii)] Display details of employees earning the minimum salary.
-    \item[(iii)] Display all employees whose designation is identical to that of 'Arun'.
-    \item[(iv)] Display employees who earn more than any employee in Department 1.
-    \item[(v)] Display employee number, name, and department using \texttt{INNER JOIN}.
-    \item[(vi)] Display employee details implementing a Left Outer Join (\texttt{LEFT OUTER JOIN}).
-    \item[(vii)] Display employee details implementing a Right Outer Join (\texttt{RIGHT OUTER JOIN}).
+    \item[(i)] List the deposit account number and amount in which the deposit scheme having maximum deposit is opened.
+    \item[(ii)] List the account number and amount of that savings bank deposit scheme in which minimum amount is deposited.
+    \item[(iii)] List the customers having accounts in `Chennai' branch.
+    \item[(iv)] List the customers having more than one account.
+    \item[(v)] List the customers having same name but different account numbers.
+    \item[(vi)] List the customer name that is having maximum deposit account in bank.
+    \item[(vii)] List the customer who has borrowed highest amount of home loan.
+    \item[(viii)] Display the customer details by implementing left inner / outer join.
+    \item[(ix)] Display the customer details by implementing a right outer join.
 \end{enumerate}
 
-\vspace{0.25cm}
-\subsection*{1. Single-Row Subqueries (Queries i, ii, iii)}
+\subsection*{1. Auxiliary Setup \& Nested Aggregate Subqueries}
 
 \subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Single-row subqueries using AVG, MIN, and attribute equality}]
-USE organisation;
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Auxiliary records setup and single-row aggregate subqueries (Queries i, ii)}]
+USE bank;
 
--- (i) Employees earning higher than the average salary
-SELECT emp_no, emp_name, salary FROM employee
-WHERE salary > (SELECT AVG(salary) FROM employee);
+-- Auxiliary record setup to facilitate complex subqueries and joins
+INSERT INTO Bank_brn VALUES (60, 'Chennai', 'Tamil Nadu');
+INSERT INTO customer VALUES (6, 'Rahul', 'Chennai', 'M', '1994-03-11');
+INSERT INTO Deposit VALUES
+(1006, 'Savings', '2023-09-01', 10000.00), (1007, 'Savings', '2023-09-05', 30000.00);
+INSERT INTO Accounts_in VALUES (60, 6);
+INSERT INTO depositor VALUES (1, 1006), (6, 1007);
+INSERT INTO borrower VALUES (1, 2001), (2, 2002), (3, 2003), (4, 2004), (5, 2005);
 
--- (ii) Details of employees earning the minimum salary
-SELECT * FROM employee 
-WHERE salary = (SELECT MIN(salary) FROM employee);
+-- (i) Deposit account number and amount with maximum deposit
+SELECT Dacno, damt FROM Deposit
+WHERE damt = (SELECT MAX(damt) FROM Deposit);
 
--- (iii) All employees sharing the same designation as 'Arun'
-SELECT * FROM employee
-WHERE designation = (
-    SELECT designation FROM employee WHERE emp_name = 'Arun'
-);
+-- (ii) Savings account number and amount with minimum deposit
+SELECT Dacno, damt FROM Deposit
+WHERE dtype = 'Savings'
+AND damt = (SELECT MIN(damt) FROM Deposit WHERE dtype = 'Savings');
+\end{lstlisting}
+
+\newpage
+
+\subsection*{2. Multi-Table Relational Joins and Complex Subqueries}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Multi-table joins, self-joins, nested subqueries, and outer joins (Queries iii--ix)}]
+-- (iii) List customers having accounts in 'Chennai' branch
+SELECT c.* FROM customer c
+INNER JOIN Accounts_in a ON c.cid = a.cid
+INNER JOIN Bank_brn b ON a.Bcode = b.bcode
+WHERE b.bloc = 'Chennai';
+
+-- (iv) List customers having more than one account
+SELECT c.cid, c.cname, COUNT(d.dacno) AS account_count
+FROM customer c
+INNER JOIN depositor d ON c.cid = d.cid
+GROUP BY c.cid, c.cname
+HAVING COUNT(d.dacno) > 1;
+
+-- (v) List customers having same name but different account numbers
+SELECT DISTINCT c1.cid, c1.cname, d1.dacno
+FROM customer c1
+INNER JOIN depositor d1 ON c1.cid = d1.cid
+INNER JOIN customer c2 ON c1.cname = c2.cname
+INNER JOIN depositor d2 ON c2.cid = d2.cid
+WHERE d1.dacno <> d2.dacno;
+
+-- (vi) List customer name having maximum deposit account in bank
+SELECT c.cname, dep.damt
+FROM customer c
+INNER JOIN depositor d ON c.cid = d.cid
+INNER JOIN Deposit dep ON d.dacno = dep.Dacno
+WHERE dep.damt = (SELECT MAX(damt) FROM Deposit);
+
+-- (vii) List customer who has borrowed highest amount of home loan
+SELECT c.cid, c.cname, l.lamt
+FROM customer c
+INNER JOIN borrower b ON c.cid = b.cid
+INNER JOIN Loan l ON b.lacno = l.Lacno
+WHERE l.ltype = 'Home Loan'
+AND l.lamt = (SELECT MAX(lamt) FROM Loan WHERE ltype = 'Home Loan');
+
+-- (viii) Display customer details by implementing left outer join
+SELECT c.cid, c.cname, d.dacno
+FROM customer c
+LEFT OUTER JOIN depositor d ON c.cid = d.cid;
+
+-- (ix) Display customer details by implementing right outer join
+SELECT c.cid, c.cname, d.dacno
+FROM customer c
+RIGHT OUTER JOIN depositor d ON c.cid = d.cid;
 \end{lstlisting}
 
 \newpage
 
 \subsubsection*{Output Screenshot}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\linewidth,height=10.5cm,keepaspectratio]{Exp4-1.png}
-    \caption{Single-row subqueries: employees above average salary, minimum salary, and matching designation.}
-    \label{fig:exp4_subqueries_single}
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp4-prob1-01.png}
+    \caption{Auxiliary record insertions and execution of subqueries for maximum deposit and minimum savings deposit.}
+    \label{fig:exp4_prob1_maxmin}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp4-prob1-02.png}
+    \caption{Retrieval of Chennai branch customers, multiple-account customers, and self-join for matching customer names.}
+    \label{fig:exp4_prob1_joins1}
 \end{figure}
 
 \newpage
 
-\subsection*{2. Multi-Row Subquery \& Table Joins (Queries iv, v, vi, vii)}
+\subsubsection*{Output Screenshot (Cont.)}
 
-\subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Multi-row subquery with ANY and table joins (INNER, LEFT, and RIGHT)}]
--- (iv) Employees earning more than any employee in Department 1
-SELECT emp_no, emp_name FROM employee
-WHERE salary > ANY (SELECT salary FROM employee WHERE dept_no = 1);
--- (v, vi) INNER JOIN and LEFT OUTER JOIN with department
-SELECT e.emp_no, e.emp_name, d.dept_name
-FROM employee e INNER JOIN department d ON e.dept_no = d.dept_no;
-SELECT e.emp_no, e.emp_name, e.salary, d.dept_name
-FROM employee e LEFT OUTER JOIN department d ON e.dept_no = d.dept_no;
--- (vii) RIGHT OUTER JOIN preserving unassigned departments
-SELECT e.emp_no, e.emp_name, e.salary, d.dept_name
-FROM employee e RIGHT OUTER JOIN department d ON e.dept_no = d.dept_no;
-\end{lstlisting}
-
-\subsubsection*{Output Screenshot}
-\vspace{0.15cm}
-\noindent\begin{minipage}[t]{0.48\textwidth}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth,height=7.2cm,keepaspectratio]{Exp4-2.png}
-    \captionof{figure}{Queries iv, v, vi: \texttt{ANY}, Inner \& Left Join.}
-    \label{fig:exp4_any_leftjoin}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\textwidth}
-    \centering
-    \includegraphics[width=\linewidth,height=4.2cm,keepaspectratio]{Exp4-3.png}
-    \captionof{figure}{Query vii: Right Outer Join.}
-    \label{fig:exp4_rightjoin}
-\end{minipage}
+    \includegraphics[width=0.94\linewidth,height=7.8cm,keepaspectratio]{Exp4-prob1-03.png}
+    \caption{Subquery joins for highest depositor, highest home loan borrower, and execution of \texttt{LEFT OUTER JOIN}.}
+    \label{fig:exp4_prob1_joins2}
+\end{figure}
 
-\vspace{0.35cm}
-\noindent\textbf{Result / Observation:}\quad The single-row subqueries, multi-row subqueries using \texttt{ANY}, and relational joins (\texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, \texttt{RIGHT OUTER JOIN}) were executed successfully in MySQL.
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=7.8cm,keepaspectratio]{Exp4-prob1-04.png}
+    \caption{Complete result sets for maximum home loan, \texttt{LEFT OUTER JOIN}, and \texttt{RIGHT OUTER JOIN}.}
+    \label{fig:exp4_prob1_joins3}
+\end{figure}
+
+\vspace{0.25cm}
+\noindent\textbf{Result / Observation:}\quad The nested subqueries and relational table joins for the Banking Enterprise database were executed successfully in MySQL. Single-row nested subqueries evaluated extreme values (\texttt{MAX}, \texttt{MIN}), multi-table inner joins and correlated self-joins filtered accounts and duplicate customer identities, and both \texttt{LEFT OUTER JOIN} and \texttt{RIGHT OUTER JOIN} preserved non-matching customer and account records as expected.
