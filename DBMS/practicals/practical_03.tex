@@ -1,10 +1,17 @@
-\section{Experiment 3: Data Manipulation Language (DML)}
 \label{exp:dml}
+\noindent
+\begin{center}
+    {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
+    \textbf{Practical No.:} 3 \hfill \textbf{Date:} 13/10/2026 \hfill \textbf{Page No.:} \thepage
+\end{center}
+\vspace{-0.2cm}
+\hrule
+\vspace{0.35cm}
 
-\subsection*{Aim}
-To populate, query, modify, and delete tuples in the \texttt{organisation} database using Data Manipulation Language (DML) commands in MySQL:
+\subsection*{Question / Problem Statement}
+Populate, query, modify, and delete tuples in the \texttt{organisation} database using Data Manipulation Language (DML) commands in MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
-    \item[(i)] Populate 5 rows each in \texttt{department} and \texttt{employee} tables and verify contents.
+    \item[(i)] Populate 5 rows each in \texttt{department} and \texttt{employee} tables and verify contents using \texttt{SELECT *}.
     \item[(ii)] Filter tuples by department, salary ranges (\texttt{BETWEEN}), and pattern conditions.
     \item[(iii)] Sort query results in descending order using \texttt{ORDER BY}.
     \item[(iv)] Eliminate duplicate records from queries using \texttt{DISTINCT}.
@@ -12,39 +19,10 @@ To populate, query, modify, and delete tuples in the \texttt{organisation} datab
     \item[(vi)] Modify records using \texttt{UPDATE} and remove specific tuples using \texttt{DELETE}.
 \end{enumerate}
 
-\subsection*{Objectives}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item To understand core DML statements: \texttt{INSERT}, \texttt{SELECT}, \texttt{UPDATE}, and \texttt{DELETE}.
-    \item To construct targeted query predicates using \texttt{WHERE}, \texttt{BETWEEN}, and logical operators.
-    \item To aggregate data and filter summarized groups using \texttt{GROUP BY} and \texttt{HAVING}.
-\end{itemize}
+\vspace{0.25cm}
+\subsection*{1. Inserting Tuples and Displaying Table Records}
 
-\subsection*{Theory}
-Data Manipulation Language (DML) enables retrieval and modification of records stored in relational tables.
-
-\subsubsection*{1. Data Manipulation Statements}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \textbf{INSERT:} Inserts new tuples into relational tables (\texttt{INSERT INTO}).
-    \item \textbf{SELECT:} Queries and projects records based on predicates (\texttt{SELECT ... FROM}).
-    \item \textbf{UPDATE:} Modifies existing column values in tuples (\texttt{UPDATE ... SET}).
-    \item \textbf{DELETE:} Removes specific rows without altering schema (\texttt{DELETE FROM}).
-\end{itemize}
-
-\subsubsection*{2. Query Operators, Sorting, and Aggregations}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \textbf{DISTINCT:} Eliminates duplicate tuples from query results (\texttt{SELECT DISTINCT}).
-    \item \textbf{ORDER BY:} Orders output in ascending (\texttt{ASC}) or descending (\texttt{DESC}) order.
-    \item \textbf{BETWEEN ... AND:} Tests whether an attribute falls within an inclusive numeric range.
-    \item \textbf{GROUP BY \& HAVING:} \texttt{GROUP BY} partitions tuples into summary groups for aggregate functions (\texttt{SUM}, \texttt{AVG}), while \texttt{HAVING} filters these groups based on aggregate conditions.
-\end{itemize}
-
-\newpage
-
-\subsection*{Commands Execution \& Output Screenshots}
-
-\subsubsection*{Part 1: Inserting Tuples and Displaying Table Records}
-Records are inserted into \texttt{department} followed by child tuples in \texttt{employee}. Both tables are subsequently verified:
-
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Inserting rows into department and employee tables}]
 USE organisation;
 
@@ -64,25 +42,30 @@ SELECT * FROM department;
 SELECT * FROM employee;
 \end{lstlisting}
 
+\newpage
+
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=2.0cm,keepaspectratio]{Exp3-1.png}
+    \includegraphics[width=0.90\linewidth,height=2.8cm,keepaspectratio]{Exp3-1.png}
     \caption{Populating tuples into the \texttt{department} table.}
     \label{fig:exp3_dept}
 \end{figure}
 
+\vspace{0.2cm}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=5.4cm,keepaspectratio]{Exp3-2.png}
+    \includegraphics[width=0.90\linewidth,height=8.0cm,keepaspectratio]{Exp3-2.png}
     \caption{Populating tuples into the \texttt{employee} table and verifying records.}
     \label{fig:exp3_emp}
 \end{figure}
 
 \newpage
 
-\subsubsection*{Part 2: Filtering, Sorting, Distinct, and Grouping Queries}
-Queries filtering by department, sorting descending by salary, filtering ranges via \texttt{BETWEEN}, eliminating duplicate designations via \texttt{DISTINCT}, and grouping departmental expenditures:
+\subsection*{2. Filtering, Sorting, Distinct, Grouping, and Updating Queries}
 
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Executing selective queries, sorting, distinct, and updates}]
 -- Employees in Dept 2 and descending salary ordering
 SELECT emp_no, emp_name FROM employee WHERE dept_no = 2;
@@ -97,6 +80,7 @@ SELECT dept_no, SUM(salary) AS total_salary FROM employee GROUP BY dept_no;
 UPDATE employee SET salary = 25000 WHERE designation = 'Typist';
 \end{lstlisting}
 
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.88\linewidth,height=5.2cm,keepaspectratio]{Exp3-3.png}
@@ -113,9 +97,9 @@ UPDATE employee SET salary = 25000 WHERE designation = 'Typist';
 
 \newpage
 
-\subsubsection*{Part 3: Record Deletion and Filtered Group Aggregations}
-Records matching a deletion predicate are removed using \texttt{DELETE}, and departments with aggregated salary expenditures exceeding 25,000 are queried using \texttt{HAVING}:
+\subsection*{3. Record Deletion and Filtered Group Aggregations}
 
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Executing DELETE and HAVING clause queries}]
 -- Delete employees with salary equal to 70000
 DELETE FROM employee WHERE salary = 70000;
@@ -128,6 +112,7 @@ GROUP BY dept_no
 HAVING SUM(salary) > 25000;
 \end{lstlisting}
 
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.88\linewidth,height=8.5cm,keepaspectratio]{Exp3-5.png}
@@ -135,5 +120,5 @@ HAVING SUM(salary) > 25000;
     \label{fig:exp3_delete_having}
 \end{figure}
 
-\subsection*{Result}
-DML commands including record insertion, multi-criteria filtering, descending sorting, duplicate elimination, grouped aggregations, updates, and deletions were executed and verified successfully in MySQL.
+\vspace{0.25cm}
+\noindent\textbf{Result / Observation:}\quad DML commands including record insertion, multi-criteria filtering, descending sorting, duplicate elimination, grouped aggregations, updates, and deletions were executed successfully in MySQL.

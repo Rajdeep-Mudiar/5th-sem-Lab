@@ -1,51 +1,28 @@
-\section{Experiment 2: Data Definition Language (DDL) Commands}
 \label{exp:ddl}
+\noindent
+\begin{center}
+    {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
+    \textbf{Practical No.:} 2 \hfill \textbf{Date:} 06/10/2026 \hfill \textbf{Page No.:} \thepage
+\end{center}
+\vspace{-0.2cm}
+\hrule
+\vspace{0.35cm}
 
-\subsection*{Aim}
-To design, implement, and manage a relational database schema for an organisation using Data Definition Language (DDL) commands in MySQL:
+\subsection*{Question / Problem Statement}
+Design, implement, and manage a relational database schema for an organisation using Data Definition Language (DDL) commands in MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
-    \item[(i)] Create and select database \texttt{organisation}.
+    \item[(i)] Create database \texttt{organisation} and select it as active context.
     \item[(ii)] Create relational tables: \texttt{department} and \texttt{employee}.
     \item[(iii)] Enforce primary key, foreign key, not null, unique, check, and default constraints.
     \item[(iv)] Inspect database schemas using \texttt{DESCRIBE}.
-    \item[(v)] Modify schemas via \texttt{ALTER TABLE} (add \texttt{designation}, drop \texttt{location}).
-    \item[(vi)] Remove schema objects via \texttt{DROP TABLE} and \texttt{DROP DATABASE}.
+    \item[(v)] Modify schemas dynamically via \texttt{ALTER TABLE} (add \texttt{designation}, drop \texttt{location}).
+    \item[(vi)] Remove schema objects using \texttt{DROP TABLE} and \texttt{DROP DATABASE}.
 \end{enumerate}
 
-\subsection*{Objectives}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item To understand DDL statements governing relational schemas and catalogs.
-    \item To enforce entity, domain, and referential integrity constraints.
-    \item To dynamically alter and drop relational schemas using \texttt{ALTER} and \texttt{DROP}.
-\end{itemize}
+\vspace{0.25cm}
+\subsection*{1. Database \& Table Creation with Integrity Constraints}
 
-\subsection*{Theory}
-Data Definition Language (DDL) defines, alters, and destroys database structures. DDL operations commit implicitly in MySQL.
-
-\subsubsection*{1. Database and Table Level Commands}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \texttt{CREATE DATABASE / USE}: Creates a database and sets it as the working catalog.
-    \item \texttt{CREATE TABLE}: Defines column attributes, datatypes, and integrity constraints.
-    \item \texttt{DESCRIBE}: Displays column specifications, keys, defaults, and nullability.
-    \item \texttt{ALTER TABLE}: Dynamically adds, renames, modifies, or drops table columns.
-    \item \texttt{DROP TABLE / DATABASE}: Permanently deletes table structures and database catalogs.
-\end{itemize}
-
-\subsubsection*{2. Integrity Constraints}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \textbf{PRIMARY KEY:} Enforces entity integrity; values must be unique and non-null.
-    \item \textbf{FOREIGN KEY:} Enforces referential integrity by linking child tuples to a parent key.
-    \item \textbf{NOT NULL / UNIQUE:} Prohibits missing values or ensures distinctness across rows.
-    \item \textbf{CHECK / DEFAULT:} Validates boolean conditions (e.g., \texttt{salary > 0}) or supplies defaults.
-\end{itemize}
-
-\newpage
-
-\subsection*{Commands Execution \& Output Screenshots}
-
-\subsubsection*{Part 1: Database \& Table Creation with Integrity Constraints}
-The database \texttt{organisation} is created. The parent table \texttt{department} is created with primary and unique keys, followed by child table \texttt{employee} referencing \texttt{department}:
-
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Creating database and tables with integrity constraints}]
 -- Create and select organisation database
 CREATE DATABASE organisation;
@@ -73,18 +50,21 @@ CREATE TABLE employee (
 SHOW TABLES;
 \end{lstlisting}
 
+\newpage
+
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=8.8cm,keepaspectratio]{Exp2-1.png}
+    \includegraphics[width=0.92\linewidth,height=10.5cm,keepaspectratio]{Exp2-1.png}
     \caption{Database creation, parent/child table creation with constraints, and table verification.}
     \label{fig:exp2_create}
 \end{figure}
 
 \newpage
 
-\subsubsection*{Part 2: Schema Inspection \& Dynamic Alteration}
-Table structures are inspected with \texttt{DESCRIBE}. We add \texttt{designation} to \texttt{employee} and drop \texttt{location} from \texttt{department}:
+\subsection*{2. Schema Inspection \& Dynamic Alteration}
 
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Inspecting schema and altering table columns}]
 DESCRIBE employee;
 DESCRIBE department;
@@ -92,16 +72,17 @@ ALTER TABLE employee ADD COLUMN designation VARCHAR(50);
 ALTER TABLE department DROP COLUMN location;
 \end{lstlisting}
 
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=4.8cm,keepaspectratio]{Exp2-2.png}
+    \includegraphics[width=0.88\linewidth,height=4.0cm,keepaspectratio]{Exp2-2.png}
     \caption{Schema inspection and execution of \texttt{ALTER TABLE} commands.}
     \label{fig:exp2_alter}
 \end{figure}
 
-\subsubsection*{Part 3: Schema Destruction Commands}
-The child and parent tables are dropped in reverse dependency order, followed by dropping the database catalog:
+\subsection*{3. Schema Destruction Commands}
 
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Dropping relational tables and database}]
 DROP TABLE employee;
 DROP TABLE department;
@@ -109,12 +90,13 @@ SHOW TABLES;
 DROP DATABASE organisation;
 \end{lstlisting}
 
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=4.8cm,keepaspectratio]{Exp2-3.png}
+    \includegraphics[width=0.88\linewidth,height=4.0cm,keepaspectratio]{Exp2-3.png}
     \caption{Dropping relational tables, verifying empty schema, and dropping database catalog.}
     \label{fig:exp2_drop}
 \end{figure}
 
-\subsection*{Result}
-The DDL commands were successfully executed in MySQL. Table creation with primary/foreign key constraints, structural modifications via \texttt{ALTER TABLE}, and schema removals were verified.
+\vspace{0.25cm}
+\noindent\textbf{Result / Observation:}\quad The DDL commands were successfully executed in MySQL. Table creation with primary/foreign key constraints, structural modifications via \texttt{ALTER TABLE}, and schema removals were verified.

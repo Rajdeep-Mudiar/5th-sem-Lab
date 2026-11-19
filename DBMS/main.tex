@@ -143,30 +143,44 @@
 \pagenumbering{roman}
 \setcounter{page}{1}
 
-% --- Laboratory Record Index Page ---
+% --- Laboratory Record Index Page (Template Format) ---
 \newpage
 \thispagestyle{plain}
 \pdfbookmark[0]{Index}{index}
 
 \begin{center}
-    {\LARGE\bfseries INDEX}
+    {\LARGE \textbf{Database Management Systems (DBMS)}}\\[0.25cm]
+    {\Large \textbf{INDEX OF PRACTICAL WORK}}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.4cm}
 
-\renewcommand{\arraystretch}{1.6}
-\noindent\begin{tabularx}{\linewidth}{|c|c|>{\raggedright\arraybackslash}X|c|c|c|}
+\noindent\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lr@{}}
+\textbf{Student Name:} Jyotirmoy Das & \textbf{Roll No.:} 240103002 \\[0.2cm]
+\textbf{Programme / Sem.:} B.Tech / 5\textsuperscript{th} Sem. & \textbf{Branch:} Computer Science \& Engg. \\[0.2cm]
+\multicolumn{2}{@{}l}{\textbf{Subject:} Database Management Systems (DBMS)}
+\end{tabular*}
+
+\vspace{0.4cm}
+
+\renewcommand{\arraystretch}{1.45}
+\noindent\begin{tabularx}{\linewidth}{|c|c|>{\raggedright\arraybackslash}X|c|c|}
 \hline
-\textbf{Exp.} & \textbf{Date} & \textbf{Title of Experiment} & \textbf{Page} & \textbf{Marks} & \textbf{Faculty Sign} \\ \hline
-1 & 15/09/2026 & Introduction to MySQL & \pageref{exp:intro_mysql} & & \\ \hline
-2 & 06/10/2026 & Data Definition Language (DDL) Commands & \pageref{exp:ddl} & & \\ \hline
-3 & 13/10/2026 & Data Manipulation Language (DML) & \pageref{exp:dml} & & \\ \hline
-4 & 20/10/2026 & Sub Queries and Joins & \pageref{exp:subqueries_joins} & & \\ \hline
-5 & -- & Views & -- & & \\ \hline
-6 & -- & Stored Procedures & -- & & \\ \hline
-7 & -- & Cursors & -- & & \\ \hline
-8 & -- & Triggers & -- & & \\ \hline
-9 & -- & Relational Schema Normalization & -- & & \\ \hline
+\textbf{Sl. No.} & \textbf{Date} & \textbf{Practical Question / Title} & \textbf{Page No.} & \textbf{Faculty Sign} \\ \hline
+1 & 06/10/2026 & Experiment 2: Data Definition Language (DDL) Commands & \pageref{exp:ddl} & \\ \hline
+2 & 13/10/2026 & Experiment 3: Data Manipulation Language (DML) Commands & \pageref{exp:dml} & \\ \hline
+3 & 20/10/2026 & Experiment 4: Sub Queries and Joins & \pageref{exp:subqueries_joins} & \\ \hline
+4 & & & & \\ \hline
+5 & & & & \\ \hline
+6 & & & & \\ \hline
+7 & & & & \\ \hline
+8 & & & & \\ \hline
+9 & & & & \\ \hline
+10 & & & & \\ \hline
+11 & & & & \\ \hline
+12 & & & & \\ \hline
+13 & & & & \\ \hline
+14 & & & & \\ \hline
 \end{tabularx}
 
 \newpage
@@ -175,10 +189,6 @@
 % PRACTICALS / EXPERIMENTS (Arabic numbering)
 % =========================================================================
 \pagenumbering{arabic}
-
-\input{practicals/practical_01.tex}
-
-\newpage
 
 \input{practicals/practical_02.tex}
 

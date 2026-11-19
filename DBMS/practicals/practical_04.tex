@@ -1,8 +1,15 @@
-\section{Experiment 4: Sub Queries and Joins}
 \label{exp:subqueries_joins}
+\noindent
+\begin{center}
+    {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
+    \textbf{Practical No.:} 4 \hfill \textbf{Date:} 20/10/2026 \hfill \textbf{Page No.:} \thepage
+\end{center}
+\vspace{-0.2cm}
+\hrule
+\vspace{0.35cm}
 
-\subsection*{Aim}
-To design, implement, and execute nested subqueries and relational table joins on the \texttt{organisation} database using MySQL:
+\subsection*{Question / Problem Statement}
+Design, implement, and execute nested subqueries and relational table joins on the \texttt{organisation} database using MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
     \item[(i)] Display employees earning more than the average salary.
     \item[(ii)] Display details of employees earning the minimum salary.
@@ -13,36 +20,10 @@ To design, implement, and execute nested subqueries and relational table joins o
     \item[(vii)] Display employee details implementing a Right Outer Join (\texttt{RIGHT OUTER JOIN}).
 \end{enumerate}
 
-\subsection*{Objectives}
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item To understand nested query structure and execution order within the \texttt{WHERE} clause.
-    \item To implement single-row subqueries ($=, >, <$) and multi-row subqueries using set quantifiers (\texttt{ANY}).
-    \item To master \texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, and \texttt{RIGHT OUTER JOIN} operations and \texttt{NULL} handling.
-\end{itemize}
+\vspace{0.25cm}
+\subsection*{1. Single-Row Subqueries (Queries i, ii, iii)}
 
-\subsection*{Theory}
-\subsubsection*{1. Subqueries (Nested Queries)}
-A \textbf{subquery} is a query nested inside another SQL statement:
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \textbf{Single-Row Subqueries:} Return a single scalar value evaluated using standard scalar comparison operators ($=, >, <, \ge, \le, \ne$) alongside aggregate functions such as \texttt{AVG()} and \texttt{MIN()}.
-    \item \textbf{Multi-Row Subqueries:} Return multiple rows and evaluate via set comparison operators (\texttt{IN}, \texttt{ANY}, \texttt{ALL}). The condition \texttt{salary > ANY (subquery)} evaluates to true if the salary exceeds at least one value returned by the subquery.
-\end{itemize}
-
-\subsubsection*{2. Relational Joins}
-SQL \textbf{joins} combine attributes from multiple normalized tables based on related keys:
-\begin{itemize}[noitemsep,topsep=2pt]
-    \item \textbf{INNER JOIN:} Returns rows where the matching join condition is satisfied in both relations.
-    \item \textbf{LEFT OUTER JOIN:} Returns all tuples from the left table; unmatched right-side attributes evaluate to \texttt{NULL}.
-    \item \textbf{RIGHT OUTER JOIN:} Returns all tuples from the right table; unmatched left-side attributes evaluate to \texttt{NULL}.
-\end{itemize}
-
-\newpage
-
-\subsection*{Commands Execution \& Output Screenshots}
-
-\subsubsection*{Part 1: Single-Row Subqueries (Queries i, ii, iii)}
-Single-row subqueries filter employee tuples against aggregated benchmarks and attribute comparisons:
-
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Single-row subqueries using AVG, MIN, and attribute equality}]
 USE organisation;
 
@@ -61,18 +42,21 @@ WHERE designation = (
 );
 \end{lstlisting}
 
+\newpage
+
+\subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\linewidth,height=8.8cm,keepaspectratio]{Exp4-1.png}
+    \includegraphics[width=0.92\linewidth,height=10.5cm,keepaspectratio]{Exp4-1.png}
     \caption{Single-row subqueries: employees above average salary, minimum salary, and matching designation.}
     \label{fig:exp4_subqueries_single}
 \end{figure}
 
 \newpage
 
-\subsubsection*{Part 2: Multi-Row Subquery \& Table Joins (Queries iv, v, vi, vii)}
-Multi-row subquery comparison with \texttt{ANY} alongside relational \texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, and \texttt{RIGHT OUTER JOIN}:
+\subsection*{2. Multi-Row Subquery \& Table Joins (Queries iv, v, vi, vii)}
 
+\subsubsection*{SQL Query}
 \begin{lstlisting}[caption={Multi-row subquery with ANY and table joins (INNER, LEFT, and RIGHT)}]
 -- (iv) Employees earning more than any employee in Department 1
 SELECT emp_no, emp_name FROM employee
@@ -87,8 +71,8 @@ SELECT e.emp_no, e.emp_name, e.salary, d.dept_name
 FROM employee e RIGHT OUTER JOIN department d ON e.dept_no = d.dept_no;
 \end{lstlisting}
 
+\subsubsection*{Output Screenshot}
 \vspace{0.15cm}
-
 \noindent\begin{minipage}[t]{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth,height=7.2cm,keepaspectratio]{Exp4-2.png}
@@ -102,7 +86,5 @@ FROM employee e RIGHT OUTER JOIN department d ON e.dept_no = d.dept_no;
     \label{fig:exp4_rightjoin}
 \end{minipage}
 
-\vspace{0.25cm}
-
-\subsection*{Result}
-The single-row subqueries, multi-row subqueries using \texttt{ANY}, and relational joins (\texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, \texttt{RIGHT OUTER JOIN}) were executed successfully in MySQL.
+\vspace{0.35cm}
+\noindent\textbf{Result / Observation:}\quad The single-row subqueries, multi-row subqueries using \texttt{ANY}, and relational joins (\texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, \texttt{RIGHT OUTER JOIN}) were executed successfully in MySQL.
