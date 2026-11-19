@@ -9,94 +9,155 @@
 \vspace{0.35cm}
 
 \subsection*{Question / Problem Statement}
-Design, implement, and manage a relational database schema for an organisation using Data Definition Language (DDL) commands in MySQL:
+Consider the database for a college. Design and implement the relational database schema using Data Definition Language (DDL) commands in MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
-    \item[(i)] Create database \texttt{organisation} and select it as active context.
-    \item[(ii)] Create relational tables: \texttt{department} and \texttt{employee}.
+    \item[(i)] Create the database \texttt{college} and select it as the active database context.
+    \item[(ii)] Create the following relational tables with their integrity constraints: \texttt{Department}, \texttt{Student}, \texttt{Faculty}, \texttt{Course}, \texttt{Register}, \texttt{Teaching}, and \texttt{Hostel}.
     \item[(iii)] Enforce primary key, foreign key, not null, unique, check, and default constraints.
-    \item[(iv)] Inspect database schemas using \texttt{DESCRIBE}.
-    \item[(v)] Modify schemas dynamically via \texttt{ALTER TABLE} (add \texttt{designation}, drop \texttt{location}).
-    \item[(vi)] Remove schema objects using \texttt{DROP TABLE} and \texttt{DROP DATABASE}.
+    \item[(iv)] Display all tables in the database using \texttt{SHOW TABLES;}.
+    \item[(v)] Describe the schema structure of all tables using \texttt{DESCRIBE}.
+    \item[(vi)] Modify the \texttt{Student} table to add a new column \texttt{grade CHAR(2)} via \texttt{ALTER TABLE}.
 \end{enumerate}
 
-\vspace{0.25cm}
 \subsection*{1. Database \& Table Creation with Integrity Constraints}
 
 \subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Creating database and tables with integrity constraints}]
--- Create and select organisation database
-CREATE DATABASE organisation;
-USE organisation;
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Creating college database and relational tables with integrity constraints}]
+-- Create and select college database
+CREATE DATABASE college;
+USE college;
 
--- Create parent table: department
-CREATE TABLE department (
-    dept_no INT PRIMARY KEY,
-    dept_name VARCHAR(50) NOT NULL UNIQUE,
-    location VARCHAR(50) DEFAULT 'Headquarters'
+-- 1. Department table
+CREATE TABLE Department (
+    dno INT PRIMARY KEY,
+    dname VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Create child table: employee (referencing department)
-CREATE TABLE employee (
-    emp_no INT PRIMARY KEY,
-    emp_name VARCHAR(100) NOT NULL,
-    DOB DATE NOT NULL,
-    address VARCHAR(100),
-    doj DATE NOT NULL,
-    mobile_no VARCHAR(15) UNIQUE,
-    dept_no INT,
+-- 2. Student table (referencing Department)
+CREATE TABLE Student (
+    sid INT PRIMARY KEY,
+    sname VARCHAR(50) NOT NULL,
+    sex CHAR(1) CHECK (sex IN ('M', 'F', 'O')),
+    dob DATE NOT NULL,
+    dno INT,
+    FOREIGN KEY (dno) REFERENCES Department(dno)
+);
+
+-- 3. Faculty table (referencing Department)
+CREATE TABLE Faculty (
+    f_id INT PRIMARY KEY,
+    fname VARCHAR(50) NOT NULL,
+    designation VARCHAR(50) DEFAULT 'Assistant Professor',
     salary DECIMAL(10, 2) CHECK (salary > 0),
-    FOREIGN KEY (dept_no) REFERENCES department(dept_no)
+    dno INT,
+    FOREIGN KEY (dno) REFERENCES Department(dno)
 );
-SHOW TABLES;
+
+-- 4. Course table (referencing Department)
+CREATE TABLE Course (
+    cid INT PRIMARY KEY,
+    cname VARCHAR(50) NOT NULL UNIQUE,
+    credits INT CHECK (credits BETWEEN 1 AND 6),
+    dno INT,
+    FOREIGN KEY (dno) REFERENCES Department(dno)
+);
+
+-- 5. Register table (composite primary key and foreign keys)
+CREATE TABLE Register (
+    sid INT,
+    cid INT,
+    sem INT DEFAULT 1,
+    PRIMARY KEY (sid, cid),
+    FOREIGN KEY (sid) REFERENCES Student(sid),
+    FOREIGN KEY (cid) REFERENCES Course(cid)
+);
+
+-- 6. Teaching table (composite primary key and foreign keys)
+CREATE TABLE Teaching (
+    f_id INT,
+    cid INT,
+    sem INT DEFAULT 1,
+    PRIMARY KEY (f_id, cid),
+    FOREIGN KEY (f_id) REFERENCES Faculty(f_id),
+    FOREIGN KEY (cid) REFERENCES Course(cid)
+);
+
+-- 7. Hostel table
+CREATE TABLE Hostel (
+    hid INT PRIMARY KEY,
+    hname VARCHAR(50) NOT NULL UNIQUE,
+    seats INT DEFAULT 100 CHECK (seats > 0)
+);
 \end{lstlisting}
 
-\newpage
-
-\subsubsection*{Output Screenshot}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.92\linewidth,height=10.5cm,keepaspectratio]{Exp2-1.png}
-    \caption{Database creation, parent/child table creation with constraints, and table verification.}
-    \label{fig:exp2_create}
-\end{figure}
-
-\newpage
+\vspace{0.2cm}
 
 \subsection*{2. Schema Inspection \& Dynamic Alteration}
 
 \subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Inspecting schema and altering table columns}]
-DESCRIBE employee;
-DESCRIBE department;
-ALTER TABLE employee ADD COLUMN designation VARCHAR(50);
-ALTER TABLE department DROP COLUMN location;
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Displaying tables, inspecting schemas, and altering table structure}]
+-- Display all created tables in college database
+SHOW TABLES;
+
+-- Inspect schema definitions and constraints
+DESCRIBE Department;
+DESCRIBE Student;
+DESCRIBE Faculty;
+DESCRIBE Course;
+DESCRIBE Register;
+DESCRIBE Teaching;
+DESCRIBE Hostel;
+
+-- Dynamically alter Student table to add grade column
+ALTER TABLE Student ADD COLUMN grade CHAR(2);
 \end{lstlisting}
 
-\subsubsection*{Output Screenshot}
+\newpage
+
+\subsection*{Output Screenshots}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\linewidth,height=4.0cm,keepaspectratio]{Exp2-2.png}
-    \caption{Schema inspection and execution of \texttt{ALTER TABLE} commands.}
+    \includegraphics[width=0.92\linewidth,height=7.8cm,keepaspectratio]{Exp2-prob1-1.png}
+    \caption{Database creation, active context selection, and Department/Student table creation.}
+    \label{fig:exp2_create1}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=8.0cm,keepaspectratio]{Exp2-prob1-2.png}
+    \caption{Creation of Student, Faculty, Course, Register, and Teaching tables with constraints.}
+    \label{fig:exp2_create2}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=7.8cm,keepaspectratio]{Exp2-prob1-3.png}
+    \caption{Hostel table creation, table catalog verification, and schema inspection of Department and Student.}
+    \label{fig:exp2_inspect1}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=8.0cm,keepaspectratio]{Exp2-prob1-4.png}
+    \caption{Schema inspection of Faculty, Course, Register, and Teaching tables.}
+    \label{fig:exp2_inspect2}
+\end{figure}
+
+\newpage
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=9.5cm,keepaspectratio]{Exp2-prob1-5.png}
+    \caption{Hostel table schema inspection and dynamic addition of \texttt{grade} column via \texttt{ALTER TABLE}.}
     \label{fig:exp2_alter}
 \end{figure}
 
-\subsection*{3. Schema Destruction Commands}
-
-\subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Dropping relational tables and database}]
-DROP TABLE employee;
-DROP TABLE department;
-SHOW TABLES;
-DROP DATABASE organisation;
-\end{lstlisting}
-
-\subsubsection*{Output Screenshot}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth,height=4.0cm,keepaspectratio]{Exp2-3.png}
-    \caption{Dropping relational tables, verifying empty schema, and dropping database catalog.}
-    \label{fig:exp2_drop}
-\end{figure}
-
-\vspace{0.25cm}
-\noindent\textbf{Result / Observation:}\quad The DDL commands were successfully executed in MySQL. Table creation with primary/foreign key constraints, structural modifications via \texttt{ALTER TABLE}, and schema removals were verified.
+\vspace{0.4cm}
+\noindent\textbf{Result / Observation:}\quad The Data Definition Language (DDL) commands for the College database were executed successfully in MySQL. All relational tables were created with appropriate entity and referential integrity constraints, table schemas were verified via \texttt{DESCRIBE}, and structural modification using \texttt{ALTER TABLE} was confirmed.
