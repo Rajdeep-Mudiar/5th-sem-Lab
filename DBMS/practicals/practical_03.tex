@@ -2,198 +2,138 @@
 \label{exp:dml}
 
 \subsection*{Aim}
-To populate, query, update, and manage records in the organisation database using Data Manipulation Language (DML) commands in MySQL:
-\begin{enumerate}
-    \item[(i)] Add 5 rows each in the \texttt{department} and \texttt{employee} tables.
-    \item[(ii)] Display all records from both tables.
-    \item[(iii)] Display the \texttt{emp\_no} and \texttt{emp\_name} of all employees belonging to department number 2.
-    \item[(iv)] Display \texttt{emp\_no}, \texttt{emp\_name}, \texttt{designation}, \texttt{dept\_no}, and \texttt{salary} in descending order of salary.
-    \item[(v)] Display the \texttt{emp\_no} and \texttt{emp\_name} of all employees whose salary is between 20,000 and 50,000 (and between 10,000 and 50,000).
-    \item[(vi)] Display all unique designations without duplicate values (\texttt{DISTINCT}).
-    \item[(vii)] Display the department name and total salary paid to employees of each department (\texttt{GROUP BY}).
-    \item[(viii)] Update the salary of employees to 25,000 whose designation is 'Typist'.
-    \item[(ix)] Update the mobile number of employee 'Jyoti' (adapted for student dataset).
-    \item[(x)] Delete all employee records whose salary is equal to Rs. 70,000.
-    \item[(xi)] Select the departments having a total employee salary expenditure greater than 25,000 (\texttt{HAVING}).
+To populate, query, modify, and delete tuples in the \texttt{organisation} database using Data Manipulation Language (DML) commands in MySQL:
+\begin{enumerate}[noitemsep,topsep=2pt]
+    \item[(i)] Populate 5 rows each in \texttt{department} and \texttt{employee} tables and verify contents.
+    \item[(ii)] Filter tuples by department, salary ranges (\texttt{BETWEEN}), and pattern conditions.
+    \item[(iii)] Sort query results in descending order using \texttt{ORDER BY}.
+    \item[(iv)] Eliminate duplicate records from queries using \texttt{DISTINCT}.
+    \item[(v)] Compute aggregate summaries using \texttt{GROUP BY} and filter groups using \texttt{HAVING}.
+    \item[(vi)] Modify records using \texttt{UPDATE} and remove specific tuples using \texttt{DELETE}.
 \end{enumerate}
 
 \subsection*{Objectives}
-\begin{itemize}
-    \item To understand and execute DML operations (\texttt{INSERT}, \texttt{SELECT}, \texttt{UPDATE}, \texttt{DELETE}).
-    \item To query data using predicates (\texttt{WHERE}, \texttt{BETWEEN ... AND}).
-    \item To sort query results using \texttt{ORDER BY} with ascending/descending qualifiers.
-    \item To aggregate data and filter grouped records using \texttt{GROUP BY} and \texttt{HAVING} clauses.
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item To understand core DML statements: \texttt{INSERT}, \texttt{SELECT}, \texttt{UPDATE}, and \texttt{DELETE}.
+    \item To construct targeted query predicates using \texttt{WHERE}, \texttt{BETWEEN}, and logical operators.
+    \item To aggregate data and filter summarized groups using \texttt{GROUP BY} and \texttt{HAVING}.
 \end{itemize}
 
 \subsection*{Theory}
-Data Manipulation Language (DML) statements are used to insert, retrieve, modify, and delete tuples stored within relational tables.
+Data Manipulation Language (DML) enables retrieval and modification of records stored in relational tables.
 
-\subsubsection*{1. INSERT Statement}
-Used to add new records into an existing table:
-\begin{lstlisting}[numbers=none]
-INSERT INTO tablename (col1, col2, ...) VALUES (val1, val2, ...);
-\end{lstlisting}
-
-\subsubsection*{2. SELECT Statement}
-The cornerstone of Data Query Language (DQL), used to fetch data subsets matching logical expressions:
-\begin{itemize}
-    \item \textbf{Basic Projection:} \texttt{SELECT col1, col2 FROM tablename;}
-    \item \textbf{Eliminating Duplicates:} \texttt{SELECT DISTINCT col1 FROM tablename;}
-    \item \textbf{Filtering Rows:} \texttt{SELECT * FROM tablename WHERE condition;}
-    \item \textbf{Sorting Records:} \texttt{SELECT * FROM tablename ORDER BY col ASC/DESC;}
-    \item \textbf{Range Checking:} \texttt{WHERE col BETWEEN lower\_val AND upper\_val;}
-    \item \textbf{Aggregation \& Grouping:} \texttt{GROUP BY} divides records into summary groups, and \texttt{HAVING} filters those groups based on aggregate conditions (e.g., \texttt{SUM()}, \texttt{AVG()}, \texttt{COUNT()}).
+\subsubsection*{1. Data Manipulation Statements}
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item \textbf{INSERT:} Inserts new tuples into relational tables (\texttt{INSERT INTO}).
+    \item \textbf{SELECT:} Queries and projects records based on predicates (\texttt{SELECT ... FROM}).
+    \item \textbf{UPDATE:} Modifies existing column values in tuples (\texttt{UPDATE ... SET}).
+    \item \textbf{DELETE:} Removes specific rows without altering schema (\texttt{DELETE FROM}).
 \end{itemize}
 
-\subsubsection*{3. UPDATE Statement}
-Modifies attribute values of existing tuples satisfying a predicate:
-\begin{lstlisting}[numbers=none]
-UPDATE tablename SET col1 = val1, col2 = val2 WHERE condition;
-\end{lstlisting}
-
-\subsubsection*{4. DELETE Statement}
-Removes tuples from a table without destroying the schema definition:
-\begin{lstlisting}[numbers=none]
-DELETE FROM tablename WHERE condition;
-\end{lstlisting}
+\subsubsection*{2. Query Operators, Sorting, and Aggregations}
+\begin{itemize}[noitemsep,topsep=2pt]
+    \item \textbf{DISTINCT:} Eliminates duplicate tuples from query results (\texttt{SELECT DISTINCT}).
+    \item \textbf{ORDER BY:} Orders output in ascending (\texttt{ASC}) or descending (\texttt{DESC}) order.
+    \item \textbf{BETWEEN ... AND:} Tests whether an attribute falls within an inclusive numeric range.
+    \item \textbf{GROUP BY \& HAVING:} \texttt{GROUP BY} partitions tuples into summary groups for aggregate functions (\texttt{SUM}, \texttt{AVG}), while \texttt{HAVING} filters these groups based on aggregate conditions.
+\end{itemize}
 
 \newpage
 
 \subsection*{Commands Execution \& Output Screenshots}
 
-\subsubsection*{Part 1: Inserting Tuples and Displaying Table Records (Steps i \& ii)}
-Five distinct records are inserted into \texttt{department} followed by five tuples in \texttt{employee}. Both tables are subsequently verified with \texttt{SELECT *}:
+\subsubsection*{Part 1: Inserting Tuples and Displaying Table Records}
+Records are inserted into \texttt{department} followed by child tuples in \texttt{employee}. Both tables are subsequently verified:
 
-\paragraph*{(a) Department Insertion}
-\begin{lstlisting}[caption={Inserting rows into department table}]
+\begin{lstlisting}[caption={Inserting rows into department and employee tables}]
 USE organisation;
 
--- (i) Insert 5 records into department table
+-- Insert records into department
 INSERT INTO department (dept_no, dept_name) VALUES
 (1, 'HR'), (2, 'Engineering'), (3, 'Finance'), (4, 'Marketing'), (5, 'Admin');
-\end{lstlisting}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.94\textwidth,height=3.8cm,keepaspectratio]{Exp3-1.png}
-    \caption{Switching to \texttt{organisation} database and inserting records into \texttt{department}.}
-    \label{fig:exp3_dept_insert}
-\end{figure}
+-- Insert records into employee
+INSERT INTO employee VALUES
+(101, 'Arun', '1997-04-10', 'Guwahati', '2022-05-01', '9876543210', 1, 15000, 'Developer'),
+(102, 'John', '1998-05-14', 'Guwahati', '2022-01-10', '9876543211', 2, 22000, 'Developer'),
+(103, 'Alice', '1995-08-20', 'Jorhat', '2021-03-15', '9876543212', 2, 35000, 'Manager'),
+(104, 'Bob', '1999-11-30', 'Jorhat', '2023-06-01', '9876543213', 1, 10000, 'Typist'),
+(105, 'Charlie', '1996-02-25', 'Tezpur', '2020-09-01', '9876543214', 3, 28000, 'Accountant');
 
-\newpage
-
-\paragraph*{(b) Employee Insertion \& Table Verification}
-\begin{lstlisting}[caption={Inserting rows into employee table and verifying contents}]
--- (i) Insert 5 records into employee table
-INSERT INTO employee (emp_no, emp_name, DOB, address, doj, mobile_no, dept_no, salary, designation) VALUES
-(101, 'Jyoti',  '1998-05-14', 'Guwahati', '2022-01-10', '9876543210', 2, 55000.00, 'Developer'),
-(102, 'Anjali', '1997-08-22', 'Shillong', '2021-03-15', '9876543211', 2, 48000.00, 'Manager'),
-(103, 'Babita', '1999-11-30', 'Jorhat',   '2023-06-01', '9876543212', 1, 15000.00, 'Typist'),
-(104, 'Chetia', '1996-02-19', 'Tezpur',   '2020-09-20', '9876543213', 3, 70000.00, 'Analyst'),
-(105, 'Diya',   '2000-07-04', 'Silchar',  '2023-08-12', '9876543214', 2, 65000.00, 'Developer');
-
--- (ii) Display all records from both tables
 SELECT * FROM department;
 SELECT * FROM employee;
 \end{lstlisting}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.92\textwidth,height=10.5cm,keepaspectratio]{Exp3-2.png}
-    \caption{Populating \texttt{employee} records and displaying all tuples with \texttt{SELECT *}.}
-    \label{fig:exp3_emp_insert}
+    \includegraphics[width=0.88\linewidth,height=2.0cm,keepaspectratio]{Exp3-1.png}
+    \caption{Populating tuples into the \texttt{department} table.}
+    \label{fig:exp3_dept}
 \end{figure}
-
-\newpage
-
-\subsubsection*{Part 2: Filtering, Ordering, and Range Queries (Steps iii, iv, v)}
-Queries are performed to filter employees by department, sort records in descending order of compensation, and retrieve employees within specified salary brackets:
-
-\begin{lstlisting}[caption={Filtering with WHERE, ORDER BY, and BETWEEN clauses}]
--- (iii) Display emp_no and emp_name of employees from department 2
-SELECT emp_no, emp_name 
-FROM employee 
-WHERE dept_no = 2;
-
--- (iv) Display employee details in descending order of salary
-SELECT emp_no, emp_name, designation, dept_no, salary 
-FROM employee 
-ORDER BY salary DESC;
-
--- (v) Display employees with salary between 20000 and 50000
-SELECT emp_no, emp_name 
-FROM employee 
-WHERE salary BETWEEN 20000 AND 50000;
-
--- Additional range query: salary between 10000 and 50000
-SELECT emp_no, emp_name 
-FROM employee 
-WHERE salary BETWEEN 10000 AND 50000;
-\end{lstlisting}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\textwidth,height=11.6cm,keepaspectratio]{Exp3-3.png}
-    \caption{Output showing records filtered by \texttt{dept\_no = 2}, sorted by salary descending, and range-checked via \texttt{BETWEEN}.}
-    \label{fig:exp3_filter_sort}
+    \includegraphics[width=0.88\linewidth,height=5.4cm,keepaspectratio]{Exp3-2.png}
+    \caption{Populating tuples into the \texttt{employee} table and verifying records.}
+    \label{fig:exp3_emp}
 \end{figure}
 
 \newpage
 
-\subsubsection*{Part 3: Distinct Selection, Grouping, and Updates (Steps vi, vii, viii, ix)}
-Unique job titles are listed via \texttt{DISTINCT}, total departmental salary expenditures are calculated with \texttt{GROUP BY}, and existing tuples are updated with \texttt{UPDATE}:
+\subsubsection*{Part 2: Filtering, Sorting, Distinct, and Grouping Queries}
+Queries filtering by department, sorting descending by salary, filtering ranges via \texttt{BETWEEN}, eliminating duplicate designations via \texttt{DISTINCT}, and grouping departmental expenditures:
 
-\begin{lstlisting}[caption={Executing DISTINCT, GROUP BY, and UPDATE statements}]
--- (vi) Display unique designations without duplicate values
+\begin{lstlisting}[caption={Executing selective queries, sorting, distinct, and updates}]
+-- Employees in Dept 2 and descending salary ordering
+SELECT emp_no, emp_name FROM employee WHERE dept_no = 2;
+SELECT emp_no, emp_name, designation, dept_no, salary FROM employee ORDER BY salary DESC;
+
+-- Salary range filtering and distinct designations
+SELECT emp_no, emp_name FROM employee WHERE salary BETWEEN 20000 AND 50000;
 SELECT DISTINCT designation FROM employee;
 
--- (vii) Display dept_name and total salary expenditure per department
-SELECT d.dept_name, SUM(e.salary) AS total_salary 
-FROM department d INNER JOIN employee e ON d.dept_no = e.dept_no 
-GROUP BY d.dept_no, d.dept_name;
-
--- (viii) Update salary of employees with designation 'Typist' to 25000
+-- Departmental expenditure and updating Typist salary
+SELECT dept_no, SUM(salary) AS total_salary FROM employee GROUP BY dept_no;
 UPDATE employee SET salary = 25000 WHERE designation = 'Typist';
-
--- (ix) Update mobile number for employee 'Jyoti'
-UPDATE employee SET mobile_no = '9999988888' WHERE emp_name = 'Jyoti';
-
--- Verify modifications
-SELECT * FROM employee;
 \end{lstlisting}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth,height=11.2cm,keepaspectratio]{Exp3-4.png}
-    \caption{Execution of \texttt{DISTINCT}, departmental salary aggregation, record updates, and post-update verification.}
-    \label{fig:exp3_group_update}
+    \includegraphics[width=0.88\linewidth,height=5.2cm,keepaspectratio]{Exp3-3.png}
+    \caption{Filtering by department, descending sorting, and range condition queries.}
+    \label{fig:exp3_filter}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth,height=5.2cm,keepaspectratio]{Exp3-4.png}
+    \caption{Distinct designations, grouped departmental summaries, and record modification.}
+    \label{fig:exp3_group}
 \end{figure}
 
 \newpage
 
-\subsubsection*{Part 4: Record Deletion and Filtered Group Aggregations (Steps x \& xi)}
-Records meeting the condition \texttt{salary = 70000} are removed using \texttt{DELETE}, followed by querying departments with total salary expenditure greater than 25,000 using \texttt{HAVING}:
+\subsubsection*{Part 3: Record Deletion and Filtered Group Aggregations}
+Records matching a deletion predicate are removed using \texttt{DELETE}, and departments with aggregated salary expenditures exceeding 25,000 are queried using \texttt{HAVING}:
 
 \begin{lstlisting}[caption={Executing DELETE and HAVING clause queries}]
--- (x) Delete all employees whose salary equals Rs. 70,000
+-- Delete employees with salary equal to 70000
 DELETE FROM employee WHERE salary = 70000;
-
--- Verify deletion
 SELECT * FROM employee;
 
--- (xi) Select departments having total salary expenditure > 25,000
-SELECT d.dept_name, SUM(e.salary) AS total_salary 
-FROM department d INNER JOIN employee e ON d.dept_no = e.dept_no 
-GROUP BY d.dept_no, d.dept_name 
-HAVING SUM(e.salary) > 25000;
+-- Departments with total salary expenditure > 25000
+SELECT dept_no, SUM(salary) AS total_salary 
+FROM employee 
+GROUP BY dept_no 
+HAVING SUM(salary) > 25000;
 \end{lstlisting}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth,height=10.5cm,keepaspectratio]{Exp3-5.png}
-    \caption{Console output displaying tuple deletion, verification of remaining rows, and filtered group aggregation via \texttt{HAVING}.}
+    \includegraphics[width=0.88\linewidth,height=8.5cm,keepaspectratio]{Exp3-5.png}
+    \caption{Tuple deletion verification and filtered group aggregations via \texttt{HAVING}.}
     \label{fig:exp3_delete_having}
 \end{figure}
 
 \subsection*{Result}
-The Data Manipulation Language (DML) commands (\texttt{INSERT}, \texttt{SELECT}, \texttt{UPDATE}, \texttt{DELETE}) and query clauses (such as \texttt{WHERE}, \texttt{ORDER BY}, \texttt{DISTINCT}, \texttt{GROUP BY}, and \texttt{HAVING}) were executed and verified successfully.
+DML commands including record insertion, multi-criteria filtering, descending sorting, duplicate elimination, grouped aggregations, updates, and deletions were executed and verified successfully in MySQL.
