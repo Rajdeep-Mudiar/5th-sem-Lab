@@ -1,124 +1,111 @@
 \label{exp:dml}
+\label{exp:dml_prob1}
 \noindent
 \begin{center}
     {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
-    \textbf{Practical No.:} 3 \hfill \textbf{Date:} 13/10/2026 \hfill \textbf{Page No.:} \thepage
+    \textbf{Practical No.:} 3 (Problem 1) \hfill \textbf{Date:} 13/10/2026 \hfill \textbf{Page No.:} \thepage
 \end{center}
 \vspace{-0.2cm}
 \hrule
 \vspace{0.35cm}
 
 \subsection*{Question / Problem Statement}
-Populate, query, modify, and delete tuples in the \texttt{organisation} database using Data Manipulation Language (DML) commands in MySQL:
+Consider the database for a college. Populate and query records using Data Manipulation Language (DML) commands in MySQL:
 \begin{enumerate}[noitemsep,topsep=2pt]
-    \item[(i)] Populate 5 rows each in \texttt{department} and \texttt{employee} tables and verify contents using \texttt{SELECT *}.
-    \item[(ii)] Filter tuples by department, salary ranges (\texttt{BETWEEN}), and pattern conditions.
-    \item[(iii)] Sort query results in descending order using \texttt{ORDER BY}.
-    \item[(iv)] Eliminate duplicate records from queries using \texttt{DISTINCT}.
-    \item[(v)] Compute aggregate summaries using \texttt{GROUP BY} and filter groups using \texttt{HAVING}.
-    \item[(vi)] Modify records using \texttt{UPDATE} and remove specific tuples using \texttt{DELETE}.
+    \item[(i)] Insert at least 5 tuples into each relational table.
+    \item[(ii)] List the details of students in ascending order of date of birth.
+    \item[(iii)] Display the details of students from the Computer department.
+    \item[(iv)] List the faculties in descending order of salary.
+    \item[(v)] Display the total number of students in each department.
+    \item[(vi)] Display the total number of faculties in each department with salary greater than 25000.
 \end{enumerate}
 
-\vspace{0.25cm}
-\subsection*{1. Inserting Tuples and Displaying Table Records}
+\subsection*{1. Inserting Tuples into Relational Tables}
 
 \subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Inserting rows into department and employee tables}]
-USE organisation;
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Populating sample records into all college database tables}]
+USE college;
 
--- Insert records into department
-INSERT INTO department (dept_no, dept_name) VALUES
-(1, 'HR'), (2, 'Engineering'), (3, 'Finance'), (4, 'Marketing'), (5, 'Admin');
-
--- Insert records into employee
-INSERT INTO employee VALUES
-(101, 'Arun', '1997-04-10', 'Guwahati', '2022-05-01', '9876543210', 1, 15000, 'Developer'),
-(102, 'John', '1998-05-14', 'Guwahati', '2022-01-10', '9876543211', 2, 22000, 'Developer'),
-(103, 'Alice', '1995-08-20', 'Jorhat', '2021-03-15', '9876543212', 2, 35000, 'Manager'),
-(104, 'Bob', '1999-11-30', 'Jorhat', '2023-06-01', '9876543213', 1, 10000, 'Typist'),
-(105, 'Charlie', '1996-02-25', 'Tezpur', '2020-09-01', '9876543214', 3, 28000, 'Accountant');
-
-SELECT * FROM department;
-SELECT * FROM employee;
+-- (i) Insert at least 5 tuples into each relational table
+INSERT INTO Department VALUES
+(1, 'Computer'), (2, 'Electronics'), (3, 'Mechanical'), (4, 'Civil'), (5, 'Electrical');
+INSERT INTO Student (sid, sname, sex, dob, dno, grade) VALUES
+(101, 'Aarav', 'M', '2004-03-15', 1, 'A'), (102, 'Priya', 'F', '2003-11-02', 1, 'A+'),
+(103, 'Rohan', 'M', '2005-01-20', 2, 'B'), (104, 'Sneha', 'F', '2004-07-19', 3, 'A'),
+(105, 'Vikram', 'M', '2003-05-10', 1, 'B+');
+INSERT INTO Faculty VALUES
+(201, 'Dr. Sharma', 'Professor', 85000.00, 1),
+(202, 'Prof. Das', 'Associate Professor', 65000.00, 1),
+(203, 'Prof. Kalita', 'Assistant Professor', 45000.00, 2),
+(204, 'Mr. Baruah', 'Lecturer', 22000.00, 3),
+(205, 'Dr. Deka', 'Professor', 90000.00, 2);
+INSERT INTO Course VALUES
+(301, 'DBMS', 4, 1), (302, 'Operating Systems', 4, 1),
+(303, 'Digital Electronics', 3, 2), (304, 'Thermodynamics', 4, 3),
+(305, 'Structural Analysis', 3, 4);
+INSERT INTO Register VALUES
+(101, 301, 5), (102, 301, 5), (103, 303, 3), (104, 304, 5), (105, 302, 5);
+INSERT INTO Teaching VALUES
+(201, 301, 5), (202, 302, 5), (203, 303, 3), (204, 304, 5), (205, 303, 3);
+INSERT INTO Hostel VALUES
+(1, 'Brahmaputra Hostel', 250), (2, 'Kameng Hostel', 200),
+(3, 'Manas Hostel', 180), (4, 'Subansiri Hostel', 220), (5, 'Dhansiri Hostel', 150);
 \end{lstlisting}
 
 \newpage
 
+\subsection*{2. Selective Retrieval, Sorting, Filtering, and Group Aggregations}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Executing sorting, departmental join, and group aggregations}]
+-- (ii) List details of students in ascending order of date of birth
+SELECT * FROM Student ORDER BY dob ASC;
+
+-- (iii) Display details of students from Computer department
+SELECT s.* FROM Student s
+INNER JOIN Department d ON s.dno = d.dno
+WHERE d.dname = 'Computer';
+
+-- (iv) List faculties in descending order of salary
+SELECT * FROM Faculty ORDER BY salary DESC;
+
+-- (v) Display total number of students in each department
+SELECT dno, COUNT(sid) AS total_students FROM Student GROUP BY dno;
+
+-- (vi) Display total number of faculties in each department with salary > 25000
+SELECT dno, COUNT(f_id) AS total_faculties
+FROM Faculty
+WHERE salary > 25000
+GROUP BY dno;
+\end{lstlisting}
+
 \subsubsection*{Output Screenshot}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\linewidth,height=2.8cm,keepaspectratio]{Exp3-1.png}
-    \caption{Populating tuples into the \texttt{department} table.}
-    \label{fig:exp3_dept}
+    \includegraphics[width=0.94\linewidth,height=7.5cm,keepaspectratio]{Exp3-prob1-01.png}
+    \caption{Populating tuples into Student, Faculty, Course, Register, Teaching, and Hostel tables.}
+    \label{fig:exp3_insert}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Output Screenshot (Cont.)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=7.8cm,keepaspectratio]{Exp3-prob1-02.png}
+    \caption{Execution of date of birth sorting, Computer department join query, and faculty salary sorting.}
+    \label{fig:exp3_query1}
 \end{figure}
 
 \vspace{0.2cm}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\linewidth,height=8.0cm,keepaspectratio]{Exp3-2.png}
-    \caption{Populating tuples into the \texttt{employee} table and verifying records.}
-    \label{fig:exp3_emp}
-\end{figure}
-
-\newpage
-
-\subsection*{2. Filtering, Sorting, Distinct, Grouping, and Updating Queries}
-
-\subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Executing selective queries, sorting, distinct, and updates}]
--- Employees in Dept 2 and descending salary ordering
-SELECT emp_no, emp_name FROM employee WHERE dept_no = 2;
-SELECT emp_no, emp_name, designation, dept_no, salary FROM employee ORDER BY salary DESC;
-
--- Salary range filtering and distinct designations
-SELECT emp_no, emp_name FROM employee WHERE salary BETWEEN 20000 AND 50000;
-SELECT DISTINCT designation FROM employee;
-
--- Departmental expenditure and updating Typist salary
-SELECT dept_no, SUM(salary) AS total_salary FROM employee GROUP BY dept_no;
-UPDATE employee SET salary = 25000 WHERE designation = 'Typist';
-\end{lstlisting}
-
-\subsubsection*{Output Screenshot}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth,height=5.2cm,keepaspectratio]{Exp3-3.png}
-    \caption{Filtering by department, descending sorting, and range condition queries.}
-    \label{fig:exp3_filter}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth,height=5.2cm,keepaspectratio]{Exp3-4.png}
-    \caption{Distinct designations, grouped departmental summaries, and record modification.}
-    \label{fig:exp3_group}
-\end{figure}
-
-\newpage
-
-\subsection*{3. Record Deletion and Filtered Group Aggregations}
-
-\subsubsection*{SQL Query}
-\begin{lstlisting}[caption={Executing DELETE and HAVING clause queries}]
--- Delete employees with salary equal to 70000
-DELETE FROM employee WHERE salary = 70000;
-SELECT * FROM employee;
-
--- Departments with total salary expenditure > 25000
-SELECT dept_no, SUM(salary) AS total_salary 
-FROM employee 
-GROUP BY dept_no 
-HAVING SUM(salary) > 25000;
-\end{lstlisting}
-
-\subsubsection*{Output Screenshot}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\linewidth,height=8.5cm,keepaspectratio]{Exp3-5.png}
-    \caption{Tuple deletion verification and filtered group aggregations via \texttt{HAVING}.}
-    \label{fig:exp3_delete_having}
+    \includegraphics[width=0.94\linewidth,height=7.8cm,keepaspectratio]{Exp3-prob1-03.png}
+    \caption{Grouped aggregate queries computing student counts and faculty counts with salary $> 25000$.}
+    \label{fig:exp3_query2}
 \end{figure}
 
 \vspace{0.25cm}
-\noindent\textbf{Result / Observation:}\quad DML commands including record insertion, multi-criteria filtering, descending sorting, duplicate elimination, grouped aggregations, updates, and deletions were executed successfully in MySQL.
+\noindent\textbf{Result / Observation:}\quad The Data Manipulation Language (DML) commands for the College database were executed successfully in MySQL. Tuples were populated into all relational tables, records were sorted and filtered using joins, and grouped aggregate summaries were computed using \texttt{COUNT()} and \texttt{GROUP BY}.
