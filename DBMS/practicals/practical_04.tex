@@ -1,0 +1,154 @@
+\section{Experiment 4: Sub Queries and Joins}
+\label{exp:subqueries_joins}
+
+\subsection*{Aim}
+To design, implement, and execute nested subqueries and relational table joins on the \texttt{organisation} database using MySQL:
+\begin{enumerate}
+    \item[(i)] Display the \texttt{emp\_no}, \texttt{emp\_name}, and \texttt{salary} for employees whose salary is higher than the average salary of the organisation.
+    \item[(ii)] Display the details of employees whose salary is equal to the minimum salary of the organisation.
+    \item[(iii)] Display all the employees whose designation is the same as that of 'Arun'.
+    \item[(iv)] Display the \texttt{emp\_no} and \texttt{emp\_name} of employees who earn more than any employee in Department 1.
+    \item[(v)] Display the \texttt{emp\_no}, \texttt{emp\_name}, and department name where the departments match in both \texttt{employee} and \texttt{department} tables (\texttt{INNER JOIN}).
+    \item[(vi)] Display employee details by implementing a Left Outer Join (\texttt{LEFT OUTER JOIN}) with the \texttt{department} table.
+    \item[(vii)] Display employee details by implementing a Right Outer Join (\texttt{RIGHT OUTER JOIN}) with the \texttt{department} table.
+\end{enumerate}
+
+\subsection*{Objectives}
+\begin{itemize}
+    \item To understand the syntax, structure, and execution flow of nested queries (subqueries) within the SQL \texttt{WHERE} clause.
+    \item To implement single-row subqueries using standard relational comparison operators ($=, >, <$) with aggregate functions (\texttt{AVG()}, \texttt{MIN()}).
+    \item To execute multi-row subqueries using set comparison quantifiers (\texttt{ANY}, \texttt{ALL}, \texttt{IN}).
+    \item To master relational join operations—specifically \texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, and \texttt{RIGHT OUTER JOIN}—and observe how unmatched records are evaluated with \texttt{NULL} values.
+\end{itemize}
+
+\subsection*{Theory}
+
+\subsubsection*{1. Subqueries (Nested Queries)}
+A \textbf{subquery} (or \textit{inner query}) is a \texttt{SELECT} statement embedded within an enclosing statement (the \textit{outer query}). In typical nested execution, the inner query executes first, and its result is supplied as an evaluation predicate to the outer query.
+
+\begin{itemize}
+    \item \textbf{Single-Row Subqueries:} Return a single scalar tuple (one row and one column). They are evaluated using scalar comparison operators ($=, >, <, \ge, \le, \ne$).
+    
+    \item \textbf{Multi-Row Subqueries:} Return a set of values (multiple rows). They require set-oriented comparison operators:
+    \begin{itemize}
+        \item \texttt{IN}: Evaluates to true if an attribute matches any value within the returned set.
+        \item \texttt{> ANY (...) / < ANY (...)}: Compares the attribute to each value in the set. For instance, \texttt{salary > ANY (subquery)} evaluates to true if the salary exceeds \textit{at least one} (i.e., greater than the minimum) value returned by the subquery.
+        \item \texttt{> ALL (...) / < ALL (...)}: Evaluates to true only if the attribute satisfies the condition against \textit{every} value returned by the subquery.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{2. Relational Joins}
+Relational databases normalize data across multiple tables to avoid data redundancy. Relational \textbf{joins} reconstruct composite views by matching tuples from two or more tables based on common attributes (typically a foreign key referencing a primary key).
+
+\begin{itemize}
+    \item \textbf{INNER JOIN (Simple Join):} Returns only those tuples where the join predicate is satisfied in both participating tables. Tuples without matching foreign keys in the opposing table are omitted from the output.
+    
+    \item \textbf{LEFT OUTER JOIN:} Returns all tuples from the left-hand table, augmented with matching columns from the right-hand table. If no corresponding record exists in the right table, the right-hand attributes populate with \texttt{NULL}.
+    
+    \item \textbf{RIGHT OUTER JOIN:} Returns all tuples from the right-hand table, combined with matching columns from the left-hand table. If no corresponding record exists in the left table, the left-hand attributes populate with \texttt{NULL}.
+\end{itemize}
+
+\newpage
+
+\subsection*{Commands Execution \& Output Screenshots}
+
+\subsubsection*{Part 1: Single-Row Subqueries (Queries i, ii, iii)}
+In this section, single-row subqueries filter employee tuples against dynamically aggregated values and attribute criteria:
+\begin{itemize}
+    \item \textbf{Query (i):} Computes the organisation-wide average salary using \texttt{AVG(salary)} in the inner query, returning all employees earning strictly above this benchmark.
+    \item \textbf{Query (ii):} Calculates the minimum salary using \texttt{MIN(salary)} and displays the complete tuple of the employee earning that minimum amount.
+    \item \textbf{Query (iii):} Obtains the designation of employee 'Arun' via subquery and extracts all employees holding that exact designation.
+\end{itemize}
+
+\begin{lstlisting}[caption={Single-row subqueries using AVG, MIN, and attribute equality}]
+USE organisation;
+
+-- (i) Employees earning higher than the average salary
+SELECT emp_no, emp_name, salary
+FROM employee
+WHERE salary > (SELECT AVG(salary) FROM employee);
+
+-- (ii) Details of employees earning the minimum salary
+SELECT * 
+FROM employee 
+WHERE salary = (SELECT MIN(salary) FROM employee);
+
+-- (iii) All employees sharing the same designation as 'Arun'
+SELECT *
+FROM employee
+WHERE designation = (
+    SELECT designation
+    FROM employee
+    WHERE emp_name = 'Arun'
+);
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth,height=10.5cm,keepaspectratio]{Exp4-1.png}
+    \caption{Execution output showing single-row subqueries: employees earning above average salary, employee with minimum salary, and employees sharing the designation of 'Arun'.}
+    \label{fig:exp4_subqueries_single}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Part 2: Multi-Row Subquery \& Table Joins (Queries iv, v, vi)}
+This part demonstrates multi-row set comparison with the \texttt{ANY} operator alongside relational \texttt{INNER JOIN} and \texttt{LEFT OUTER JOIN}:
+\begin{itemize}
+    \item \textbf{Query (iv):} The subquery retrieves all salaries in Department 1 (\texttt{HR}). The outer query uses \texttt{salary > ANY (...)} to identify any employee earning more than the lowest salary in Department 1.
+    \item \textbf{Query (v):} An \texttt{INNER JOIN} matches \texttt{employee} and \texttt{department} tuples on the common \texttt{dept\_no} attribute.
+    \item \textbf{Query (vi):} A \texttt{LEFT OUTER JOIN} preserves all employees—including unassigned staff (e.g., 'Diana' with \texttt{dept\_no = NULL})—displaying \texttt{NULL} for their department.
+\end{itemize}
+
+\begin{lstlisting}[caption={Multi-row subquery with ANY, INNER JOIN, and LEFT OUTER JOIN}]
+-- (iv) Employees earning more than any employee in Department 1
+SELECT emp_no, emp_name
+FROM employee
+WHERE salary > ANY (
+    SELECT salary
+    FROM employee
+    WHERE dept_no = 1
+);
+
+-- (v) Display employee number, name, and department using INNER JOIN
+SELECT e.emp_no, e.emp_name, d.dept_name
+FROM employee e
+INNER JOIN department d ON e.dept_no = d.dept_no;
+
+-- (vi) Implement LEFT OUTER JOIN to show all employees and departments
+SELECT e.emp_no, e.emp_name, e.salary, d.dept_name
+FROM employee e
+LEFT OUTER JOIN department d ON e.dept_no = d.dept_no;
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth,height=13.5cm,keepaspectratio]{Exp4-2.png}
+    \caption{Execution output demonstrating multi-row subquery with \texttt{> ANY}, \texttt{INNER JOIN}, and \texttt{LEFT OUTER JOIN} preserving unassigned employee records with \texttt{NULL}.}
+    \label{fig:exp4_any_leftjoin}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Part 3: Right Outer Join (Query vii)}
+A \texttt{RIGHT OUTER JOIN} preserves all tuples from the right-hand table (\texttt{department}), ensuring every department is displayed even if no employees are currently assigned to it:
+\begin{itemize}
+    \item Departments \texttt{Admin} and \texttt{Marketing} currently have no allocated employee tuples; their corresponding \texttt{emp\_no}, \texttt{emp\_name}, and \texttt{salary} fields evaluate to \texttt{NULL}.
+\end{itemize}
+
+\begin{lstlisting}[caption={Implementing RIGHT OUTER JOIN between employee and department}]
+-- (vii) Display employee details implementing RIGHT OUTER JOIN
+SELECT e.emp_no, e.emp_name, e.salary, d.dept_name
+FROM employee e
+RIGHT OUTER JOIN department d ON e.dept_no = d.dept_no;
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth,height=7.5cm,keepaspectratio]{Exp4-3.png}
+    \caption{Execution output of \texttt{RIGHT OUTER JOIN} showing all departments preserved, with vacant departments (\texttt{Admin}, \texttt{Marketing}) displaying \texttt{NULL} employee attributes.}
+    \label{fig:exp4_rightjoin}
+\end{figure}
+
+\subsection*{Result}
+The single-row subqueries, multi-row subqueries using the \texttt{ANY} quantifier, and relational joins (\texttt{INNER JOIN}, \texttt{LEFT OUTER JOIN}, and \texttt{RIGHT OUTER JOIN}) were successfully designed, executed, and validated in MySQL. The outputs verified correct conditional filtering and the preservation of non-matching tuples with \texttt{NULL} values across outer joins.
