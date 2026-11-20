@@ -147,3 +147,102 @@ RIGHT OUTER JOIN depositor d ON c.cid = d.cid;
 
 \vspace{0.25cm}
 \noindent\textbf{Result / Observation:}\quad The nested subqueries and relational table joins for the Banking Enterprise database were executed successfully in MySQL. Single-row nested subqueries evaluated extreme values (\texttt{MAX}, \texttt{MIN}), multi-table inner joins and correlated self-joins filtered accounts and duplicate customer identities, and both \texttt{LEFT OUTER JOIN} and \texttt{RIGHT OUTER JOIN} preserved non-matching customer and account records as expected.
+
+\newpage
+
+% =========================================================================
+% EXPERIMENT 4 - PROBLEM 2: COLLEGE DATABASE SUBQUERIES AND JOINS
+% =========================================================================
+\label{exp:subqueries_prob2}
+\noindent
+\begin{center}
+    {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
+    \textbf{Practical No.:} 4 (Problem 2) \hfill \textbf{Date:} 20/10/2026 \hfill \textbf{Page No.:} \thepage
+\end{center}
+\vspace{-0.2cm}
+\hrule
+\vspace{0.35cm}
+
+\subsection*{Question / Problem Statement}
+Consider the database for a college. Design, implement, and execute relational table joins and nested queries using MySQL:
+\begin{enumerate}[noitemsep,topsep=2pt]
+    \item[(i)] List out the ID, Name, and Date of Birth of students registered for a specific course.
+    \item[(ii)] List out the ID, Name, and Date of Birth of students registered for a specific course, staying in a specific Hostel.
+    \item[(iii)] List the names of faculties who teach for a specific course.
+    \item[(iv)] Display the student details by implementing a left outer join.
+    \item[(v)] Display the student details by implementing a right outer join.
+\end{enumerate}
+
+\subsection*{1. Schema Extension and Relational Join Queries}
+
+\subsubsection*{SQL Query}
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Schema alteration, multi-table inner joins, and outer joins (Queries i--v)}]
+USE college;
+
+-- Schema update: Add hostel reference to Student
+ALTER TABLE Student ADD COLUMN hid INT;
+ALTER TABLE Student ADD FOREIGN KEY (hid) REFERENCES Hostel(hid);
+UPDATE Student SET hid = 1 WHERE sid IN (101, 102);
+UPDATE Student SET hid = 2 WHERE sid IN (103, 104, 105);
+
+-- (i) Students registered for a specific course ('DBMS')
+SELECT s.sid, s.sname, s.dob FROM Student s
+INNER JOIN Register r ON s.sid = r.sid
+INNER JOIN Course c ON r.cid = c.cid
+WHERE c.cname = 'DBMS';
+
+-- (ii) Students registered for 'DBMS' staying in 'Brahmaputra Hostel'
+SELECT s.sid, s.sname, s.dob FROM Student s
+INNER JOIN Register r ON s.sid = r.sid
+INNER JOIN Course c ON r.cid = c.cid
+INNER JOIN Hostel h ON s.hid = h.hid
+WHERE c.cname = 'DBMS' AND h.hname = 'Brahmaputra Hostel';
+
+-- (iii) Faculties teaching for 'DBMS'
+SELECT f.fname FROM Faculty f
+INNER JOIN Teaching t ON f.f_id = t.f_id
+INNER JOIN Course c ON t.cid = c.cid
+WHERE c.cname = 'DBMS';
+
+-- (iv) Student details implementing Left Outer Join
+SELECT s.sid, s.sname, r.cid, r.sem FROM Student s
+LEFT OUTER JOIN Register r ON s.sid = r.sid;
+
+-- (v) Student details implementing Right Outer Join
+SELECT s.sid, s.sname, r.cid, r.sem FROM Student s
+RIGHT OUTER JOIN Register r ON s.sid = r.sid;
+\end{lstlisting}
+
+\newpage
+
+\subsubsection*{Output Screenshot}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp4-prob2-01.png}
+    \caption{Hostel foreign key addition, record updates, and queries for course registration and hostel accommodation.}
+    \label{fig:exp4_prob2_joins1}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp4-prob2-02.png}
+    \caption{Result of hostel filtering query, faculty teaching query for DBMS, and execution of \texttt{LEFT OUTER JOIN}.}
+    \label{fig:exp4_prob2_joins2}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Output Screenshot (Cont.)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.8cm,keepaspectratio]{Exp4-prob2-03.png}
+    \caption{Complete result sets for \texttt{LEFT OUTER JOIN} and \texttt{RIGHT OUTER JOIN} across \texttt{Student} and \texttt{Register}.}
+    \label{fig:exp4_prob2_joins3}
+\end{figure}
+
+\vspace{0.35cm}
+\noindent\textbf{Result / Observation:}\quad Relational table joins and subqueries for the College database were executed successfully in MySQL. Foreign key associations were established between \texttt{Student} and \texttt{Hostel}, multi-table inner joins retrieved filtered student and faculty records matching course and accommodation criteria, and both \texttt{LEFT OUTER JOIN} and \texttt{RIGHT OUTER JOIN} preserved student registrations as expected.
