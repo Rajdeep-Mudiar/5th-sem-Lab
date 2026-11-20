@@ -8,13 +8,13 @@
     {\LARGE \textbf{DBMS LABORATORY PRACTICAL}}\\[0.25cm]
     \textbf{Practical No.:} 5 \hfill \textbf{Date:} 26/10/2026 \hfill \textbf{Page No.:} \thepage
 \end{center}
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 \hrule
-\vspace{0.35cm}
+\vspace{0.2cm}
 
 \subsection*{Question / Problem Statement}
 Consider the database \texttt{CollegeLab} comprising relational tables \texttt{Students}, \texttt{ExamMarks}, \texttt{Department}, and \texttt{Employee}. Write, optimize, and execute SQL queries to perform table operations, enforce referential integrity, and evaluate subqueries:
-\begin{enumerate}[noitemsep,topsep=2pt]
+\begin{enumerate}[noitemsep,topsep=1pt,parsep=0pt,partopsep=0pt]
     \item[(i)] Display students from Guwahati in descending order of marks.
     \item[(ii)] Find the number of students in each course who scored at least 70.
     \item[(iii)] Display the second-highest distinct marks using a subquery.
@@ -24,56 +24,42 @@ Consider the database \texttt{CollegeLab} comprising relational tables \texttt{S
     \item[(vii)] Display the highest-paid employee in each department using a correlated subquery.
     \item[(viii)] List students with scores in both DBMS and Python using nested queries.
     \item[(ix)] Create a \texttt{CourseDetails} table and establish a foreign key with \texttt{Students}.
-    \item[(x)] Demonstrate and explain why deleting a parent row fails when dependent child records exist.
+    \item[(x)] Explain why deleting a parent row may fail when child records exist.
 \end{enumerate}
 
+\vspace{-0.15cm}
 \subsection*{1. Database Schema Setup \& Benchmark Data Insertion}
 
-\subsubsection*{SQL Query}
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Creating CollegeLab schema and populating benchmark records}]
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,caption={Creating CollegeLab schema and populating benchmark records}]
 CREATE DATABASE IF NOT EXISTS CollegeLab;
 USE CollegeLab;
 
 -- 1. Create relational tables with primary and foreign key constraints
 CREATE TABLE Students (
-    Roll_No INT PRIMARY KEY,
-    Name VARCHAR(50) NOT NULL,
-    Address VARCHAR(60),
-    Age INT,
-    Course VARCHAR(50),
-    Marks DECIMAL(5, 2)
+    Roll_No INT PRIMARY KEY, Name VARCHAR(50) NOT NULL,
+    Address VARCHAR(60), Age INT, Course VARCHAR(50), Marks DECIMAL(5, 2)
 );
-
 CREATE TABLE ExamMarks (
-    Mark_ID INT PRIMARY KEY,
-    Student_ID INT NOT NULL,
-    Subject VARCHAR(50) NOT NULL,
-    Score DECIMAL(5, 2) NOT NULL,
-    CONSTRAINT fk_exam_student FOREIGN KEY (Student_ID)
-        REFERENCES Students(Roll_No)
+    Mark_ID INT PRIMARY KEY, Student_ID INT NOT NULL,
+    Subject VARCHAR(50) NOT NULL, Score DECIMAL(5, 2) NOT NULL,
+    CONSTRAINT fk_exam_student FOREIGN KEY (Student_ID) REFERENCES Students(Roll_No)
 );
-
 CREATE TABLE Department (
-    Dept_ID INT PRIMARY KEY,
-    Dept_Name VARCHAR(50) NOT NULL
+    Dept_ID INT PRIMARY KEY, Dept_Name VARCHAR(50) NOT NULL
 );
-
 CREATE TABLE Employee (
-    Emp_ID INT PRIMARY KEY,
-    Emp_Name VARCHAR(50) NOT NULL,
-    Salary DECIMAL(10, 2) NOT NULL,
-    Dept_No INT,
-    CONSTRAINT fk_employee_dept FOREIGN KEY (Dept_No)
-        REFERENCES Department(Dept_ID)
+    Emp_ID INT PRIMARY KEY, Emp_Name VARCHAR(50) NOT NULL,
+    Salary DECIMAL(10, 2) NOT NULL, Dept_No INT,
+    CONSTRAINT fk_employee_dept FOREIGN KEY (Dept_No) REFERENCES Department(Dept_ID)
 );
 
--- 2. Populate sample records
-INSERT INTO Students VALUES
+-- 2. Populate benchmark records
+INSERT INTO Students (Roll_No, Name, Address, Age, Course, Marks) VALUES
 (1, 'Rahul', 'Guwahati', 20, 'MCA', 85), (2, 'Priya', 'Jorhat', 21, 'MCA', 92),
 (3, 'Amit', 'Dibrugarh', 22, 'BCA', 68), (4, 'Neha', 'Guwahati', 20, 'MCA', 78),
 (5, 'Riya', 'Silchar', 23, 'BCA', 92), (6, 'Arjun', 'Tezpur', 21, 'MCA', 60);
 
-INSERT INTO ExamMarks VALUES
+INSERT INTO ExamMarks (Mark_ID, Student_ID, Subject, Score) VALUES
 (101, 1, 'DBMS', 88), (102, 1, 'Python', 82), (103, 2, 'DBMS', 95), (104, 2, 'Python', 89),
 (105, 3, 'DBMS', 70), (106, 4, 'DBMS', 80), (107, 5, 'Python', 94), (108, 6, 'DBMS', 58);
 
@@ -87,96 +73,119 @@ INSERT INTO Employee VALUES
 
 \newpage
 
-\subsection*{2. Filtering, Aggregations, and Nested Subqueries (Exercises i--v)}
+\subsection*{2. Relational Queries, Subqueries, and Foreign Key Constraints (Exercises i--x)}
 
-\subsubsection*{SQL Query}
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Executing conditional filtering, grouping, scalar subqueries, and set membership}]
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,caption={SQL commands for Exercises (i) through (x)}]
 -- (i) Display students from Guwahati in descending order of marks
-SELECT * FROM Students
-WHERE Address = 'Guwahati'
-ORDER BY Marks DESC;
+SELECT * FROM Students WHERE Address = 'Guwahati' ORDER BY Marks DESC;
 
--- (ii) Find number of students in each course scoring at least 70
-SELECT Course, COUNT(*) AS StudentCount
-FROM Students
-WHERE Marks >= 70
-GROUP BY Course;
+-- (ii) Find number of students in each course who scored at least 70
+SELECT Course, COUNT(*) AS TotalStudents FROM Students
+WHERE Marks >= 70 GROUP BY Course;
 
--- (iii) Display second-highest distinct marks using a subquery
-SELECT MAX(Marks) AS SecondHighestMarks
-FROM Students
+-- (iii) Display the second-highest distinct marks using a subquery
+SELECT MAX(Marks) AS SecondHighestMarks FROM Students
 WHERE Marks < (SELECT MAX(Marks) FROM Students);
 
--- (iv) Employees earning more than average salary of all employees
-SELECT Emp_ID, Emp_Name, Salary, Dept_No
-FROM Employee
+-- (iv) Find employees earning more than average salary of all employees
+SELECT Emp_ID, Emp_Name, Salary FROM Employee
 WHERE Salary > (SELECT AVG(Salary) FROM Employee);
 
--- (v) Students whose Roll_No appears in ExamMarks with Score >= 90
-SELECT Roll_No, Name, Course, Marks
-FROM Students
-WHERE Roll_No IN (
-    SELECT Student_ID FROM ExamMarks WHERE Score >= 90
+-- (v) List students whose Roll_No appears in ExamMarks with Score >= 90
+SELECT Roll_No, Name FROM Students
+WHERE Roll_No IN (SELECT Student_ID FROM ExamMarks WHERE Score >= 90);
+
+-- (vi) Find departments having no employees using NOT EXISTS
+SELECT d.Dept_ID, d.Dept_Name FROM Department d
+WHERE NOT EXISTS (SELECT 1 FROM Employee e WHERE e.Dept_No = d.Dept_ID);
+
+-- (vii) Highest-paid employee in each department using correlated subquery
+SELECT e.Emp_ID, e.Emp_Name, e.Salary, e.Dept_No FROM Employee e
+WHERE e.Salary = (SELECT MAX(e2.Salary) FROM Employee e2 WHERE e2.Dept_No = e.Dept_No);
+
+-- (viii) List students with scores in both DBMS and Python using nested queries
+SELECT Roll_No, Name FROM Students
+WHERE Roll_No IN (SELECT Student_ID FROM ExamMarks WHERE Subject = 'DBMS')
+  AND Roll_No IN (SELECT Student_ID FROM ExamMarks WHERE Subject = 'Python');
+
+-- (ix) Create CourseDetails table and establish foreign key relationship
+CREATE TABLE CourseDetails (
+    Course_Name VARCHAR(50) PRIMARY KEY,
+    Duration_Years INT NOT NULL, Total_Credits INT NOT NULL
 );
+INSERT INTO CourseDetails (Course_Name, Duration_Years, Total_Credits) VALUES
+('MCA', 2, 80), ('BCA', 3, 120);
+
+ALTER TABLE Students ADD CONSTRAINT fk_student_course
+FOREIGN KEY (Course) REFERENCES CourseDetails(Course_Name);
+
+-- (x) Referential integrity verification: Attempting to delete a parent row
+-- with referencing child records fails due to ON DELETE RESTRICT (Error 1451).
+-- DELETE FROM Students WHERE Roll_No = 1;
 \end{lstlisting}
 
 \newpage
 
-\subsection*{3. Correlated Subqueries, Constraints, and Referential Integrity (Exercises vi--x)}
+\subsubsection*{Output Screenshot}
 
-\subsubsection*{SQL Query}
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,caption={Correlated subqueries, NOT EXISTS, multi-subqueries, and foreign keys}]
--- (vi) Find departments having no employees using NOT EXISTS
-SELECT Dept_ID, Dept_Name
-FROM Department d
-WHERE NOT EXISTS (
-    SELECT 1 FROM Employee e WHERE e.Dept_No = d.Dept_ID
-);
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp5-01.png}
+    \caption{MySQL initialization, environment inspection, and creation of the \texttt{CollegeLab} database.}
+    \label{fig:exp5_setup}
+\end{figure}
 
--- (vii) Highest-paid employee in each department (correlated subquery)
-SELECT e.Emp_ID, e.Emp_Name, e.Salary, e.Dept_No
-FROM Employee e
-WHERE e.Salary = (
-    SELECT MAX(e2.Salary)
-    FROM Employee e2
-    WHERE e2.Dept_No = e.Dept_No
-);
+\vspace{0.2cm}
 
--- (viii) Students with scores in both DBMS and Python (nested subqueries)
-SELECT Roll_No, Name, Course
-FROM Students
-WHERE Roll_No IN (
-    SELECT Student_ID FROM ExamMarks WHERE Subject = 'DBMS'
-)
-AND Roll_No IN (
-    SELECT Student_ID FROM ExamMarks WHERE Subject = 'Python'
-);
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp5-02.png}
+    \caption{Relational table definitions with constraints and initial benchmark record insertions.}
+    \label{fig:exp5_tables}
+\end{figure}
 
--- (ix) Create CourseDetails table and establish foreign key relationship
-CREATE TABLE CourseDetails (
-    Course_Code VARCHAR(50) PRIMARY KEY,
-    Duration_Years INT NOT NULL CHECK (Duration_Years > 0),
-    Department VARCHAR(50) NOT NULL
-);
-INSERT INTO CourseDetails VALUES
-('MCA', 2, 'Computer Science & Applications'),
-('BCA', 3, 'Computer Applications');
+\newpage
 
-ALTER TABLE Students
-ADD CONSTRAINT fk_students_coursedetails
-FOREIGN KEY (Course) REFERENCES CourseDetails(Course_Code);
+\subsubsection*{Output Screenshot (Cont.)}
 
--- (x) Demonstrate referential integrity violation on parent record deletion
-DELETE FROM Students WHERE Roll_No = 1;
-\end{lstlisting}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp5-03.png}
+    \caption{Populating \texttt{ExamMarks}, \texttt{Department}, \texttt{Employee}, and executing Queries (i) and (ii).}
+    \label{fig:exp5_insert_q1_q2}
+\end{figure}
+
+\vspace{0.2cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=8.0cm,keepaspectratio]{Exp5-04.png}
+    \caption{Execution of subqueries: second-highest marks (iii), above-average salary (iv), score $\ge 90$ check (v), and \texttt{NOT EXISTS} (vi).}
+    \label{fig:exp5_q3_to_q6}
+\end{figure}
+
+\newpage
+
+\subsubsection*{Output Screenshot (Cont.)}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=6.2cm,keepaspectratio]{Exp5-05.png}
+    \caption{Execution of correlated subquery for top departmental salaries (vii) and nested subqueries for multi-course enrollment (viii).}
+    \label{fig:exp5_q7_q8}
+\end{figure}
+
+\vspace{0.15cm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.94\linewidth,height=6.2cm,keepaspectratio]{Exp5-06.png}
+    \caption{Creation of \texttt{CourseDetails} table, course data insertion, and foreign key constraint establishment (ix).}
+    \label{fig:exp5_q9}
+\end{figure}
 
 \vspace{0.25cm}
-\subsection*{4. Referential Integrity Analysis (Exercise x)}
-\noindent\textbf{Theoretical Explanation:}\quad In relational databases, referential integrity mandates that every foreign key value in a child table (\texttt{ExamMarks.Student\_ID}) must reference a valid, existing primary key in the parent table (\texttt{Students.Roll\_No}). When executing:
-\begin{center}
-    \texttt{DELETE FROM Students WHERE Roll\_No = 1;}
-\end{center}
-the RDBMS halts execution and returns \textbf{Error 1451 (23000)}: \textit{"Cannot delete or update a parent row: a foreign key constraint fails"}. Because child records in \texttt{ExamMarks} reference \texttt{Student\_ID = 1}, deleting the parent record would generate orphan child records. Under MySQL's default referential action (\texttt{RESTRICT}/\texttt{NO ACTION}), the delete operation is rejected. To delete successfully, either the referencing child rows must be removed first, or the foreign key must be defined with \texttt{ON DELETE CASCADE} or \texttt{ON DELETE SET NULL}.
 
-\vspace{0.35cm}
-\noindent\textbf{Result / Observation:}\quad Relational table operations, aggregate summaries, single-row subqueries, correlated subqueries, set membership checks (\texttt{IN}, \texttt{NOT EXISTS}), and referential integrity constraints were implemented and evaluated in MySQL according to the laboratory exercises. Constraint enforcement against orphan record creation and foreign key violation behavior were verified.
+\noindent\textbf{Result / Observation:}\quad Relational table operations, conditional filtering, grouping aggregations, scalar subqueries, correlated subqueries, set membership evaluations (\texttt{IN}, \texttt{NOT EXISTS}), and foreign key constraints were implemented and executed successfully in MySQL.
+
+\noindent\textbf{Explanation for Exercise (x):}\quad Deleting a parent row fails because of \textbf{referential integrity} enforced by a \texttt{FOREIGN KEY} constraint. If a child table (such as \texttt{ExamMarks}) contains rows referencing a primary key in the parent table (\texttt{Students.Roll\_No}), MySQL's default rule (\texttt{ON DELETE RESTRICT} / \texttt{NO ACTION}) blocks the deletion to prevent \textbf{orphan records}---child rows pointing to a parent that no longer exists. To delete the parent row, one must either delete the dependent child rows first (e.g., inside a transaction) or define the foreign key with \texttt{ON DELETE CASCADE} or \texttt{ON DELETE SET NULL}.
