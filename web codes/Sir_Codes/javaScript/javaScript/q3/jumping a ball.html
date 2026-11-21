@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Jumping Ball</title>
+
+    <style>
+      body {
+        height: 2000px;
+      }
+
+      #ball {
+        width: 60px;
+        height: 60px;
+        background-color: red;
+        border-radius: 50%;
+
+        position: fixed;
+        bottom: 20px;
+        left: 0px;
+
+        animation: jump 0.6s infinite alternate;
+      }
+
+      @keyframes jump {
+        from {
+          bottom: 20px;
+        }
+        to {
+          bottom: 150px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Scroll to Move the Jumping Ball</h2>
+
+    <div id="ball"></div>
+
+    <script>
+      let ball = document.getElementById("ball");
+
+      window.addEventListener("scroll", function () {
+        let scrollPosition = window.scrollY;
+
+        ball.style.left = scrollPosition + "px";
+      });
+    </script>
+  </body>
+</html>

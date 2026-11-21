@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Background Colour</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        color: #202a3b;
+        padding: 32px;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 620px;
+        margin: 20px auto;
+        background: white;
+        padding: 28px;
+        border-radius: 12px;
+        box-shadow: 0 4px 18px #0001;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin: 6px 6px 6px 0;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      button:disabled {
+        cursor: default;
+      }
+      input,
+      textarea,
+      select {
+        display: block;
+        width: 100%;
+        max-width: 430px;
+        box-sizing: border-box;
+        padding: 10px;
+        margin: 7px 0 14px;
+        border: 1px solid #a8b4c8;
+        border-radius: 5px;
+        font: inherit;
+      }
+      label {
+        display: block;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .completed {
+        text-decoration: line-through;
+        color: #777;
+      }
+      .notice {
+        color: #b42318;
+      }
+      .success {
+        color: #18733c;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        max-width: 440px;
+      }
+      .memory-card {
+        height: 72px;
+        font-size: 28px;
+        margin: 0;
+        background: #3b82f6;
+      }
+      .memory-card.matched {
+        background: #16805d;
+      }
+      #slide {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Random Background Colour</h1>
+      <h1>Click to change the background</h1>
+      <p>Colour code: <strong id="code">#F4F7FB</strong></p>
+      <button onclick="generateColour()">Generate Colour</button>
+    </main>
+
+    <script>
+      function generateColour() {
+        // Generate a random number between 0 and 16777215.
+        const randomNumber = Math.floor(Math.random() * 16777216);
+        const colour =
+          "#" + randomNumber.toString(16).padStart(6, "0").toUpperCase();
+        document.body.style.backgroundColor = colour;
+        document.getElementById("code").textContent = colour;
+      }
+    </script>
+  </body>
+</html>

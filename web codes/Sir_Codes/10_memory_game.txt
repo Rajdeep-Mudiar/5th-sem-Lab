@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Matching Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        color: #202a3b;
+        padding: 32px;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 620px;
+        margin: 20px auto;
+        background: white;
+        padding: 28px;
+        border-radius: 12px;
+        box-shadow: 0 4px 18px #0001;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: 0;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin: 6px 6px 6px 0;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      button:disabled {
+        cursor: default;
+      }
+      input,
+      textarea,
+      select {
+        display: block;
+        width: 100%;
+        max-width: 430px;
+        box-sizing: border-box;
+        padding: 10px;
+        margin: 7px 0 14px;
+        border: 1px solid #a8b4c8;
+        border-radius: 5px;
+        font: inherit;
+      }
+      label {
+        display: block;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .completed {
+        text-decoration: line-through;
+        color: #777;
+      }
+      .notice {
+        color: #b42318;
+      }
+      .success {
+        color: #18733c;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        max-width: 440px;
+      }
+      .memory-card {
+        height: 72px;
+        font-size: 28px;
+        margin: 0;
+        background: #3b82f6;
+      }
+      .memory-card.matched {
+        background: #16805d;
+      }
+      #slide {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Memory Matching Game</h1>
+      <p>Find all matching pairs.</p>
+      <p>
+        Attempts: <strong id="attempts">0</strong> | Matches:
+        <strong id="matches">0</strong>/8
+      </p>
+      <div id="board" class="board"></div>
+      <p id="message" role="status"></p>
+      <button onclick="startGame()">Restart Game</button>
+    </main>
+
+    <script>
+      const symbols = ["🍎", "🌟", "🐱", "🌈", "🎈", "🍀", "🚀", "🎵"];
+      let cards = [];
+      let firstCard = null;
+      let secondCard = null;
+      let locked = false;
+      let attempts = 0;
+      let matches = 0;
+      let gameId = 0;
+      function startGame() {
+        gameId++; // Ignore delayed flips from an older game.
+        cards = [...symbols, ...symbols];
+        // Shuffle the cards with Fisher-Yates.
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+        firstCard = null;
+        secondCard = null;
+        locked = false;
+        attempts = 0;
+        matches = 0;
+        document.getElementById("attempts").textContent = "0";
+        document.getElementById("matches").textContent = "0";
+        document.getElementById("message").textContent = "";
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+        cards.forEach(function (symbol) {
+          const card = document.createElement("button");
+          card.className = "memory-card";
+          card.textContent = "?";
+          card.setAttribute("aria-label", "Hidden card");
+          card.onclick = function () {
+            flipCard(card, symbol);
+          };
+          board.appendChild(card);
+        });
+      }
+      function flipCard(card, symbol) {
+        if (locked || card === firstCard || card.classList.contains("matched"))
+          return;
+        card.textContent = symbol;
+        card.setAttribute("aria-label", symbol);
+        if (firstCard === null) {
+          firstCard = card;
+          return;
+        }
+        secondCard = card;
+        attempts++;
+        document.getElementById("attempts").textContent = attempts;
+        if (firstCard.textContent === secondCard.textContent) {
+          firstCard.classList.add("matched");
+          secondCard.classList.add("matched");
+          firstCard.disabled = true;
+          secondCard.disabled = true;
+          matches++;
+          document.getElementById("matches").textContent = matches;
+          firstCard = null;
+          secondCard = null;
+          if (matches === symbols.length)
+            document.getElementById("message").textContent =
+              "Congratulations! You found all pairs.";
+        } else {
+          locked = true;
+          const oldGame = gameId;
+          setTimeout(function () {
+            if (oldGame !== gameId) return;
+            firstCard.textContent = "?";
+            secondCard.textContent = "?";
+            firstCard.setAttribute("aria-label", "Hidden card");
+            secondCard.setAttribute("aria-label", "Hidden card");
+            firstCard = null;
+            secondCard = null;
+            locked = false;
+          }, 900);
+        }
+      }
+      startGame();
+    </script>
+  </body>
+</html>
